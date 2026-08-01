@@ -1,4 +1,4 @@
-// server.js - Express Server Configuration with 50MB Payload Limit
+// server.js - Express Server Configuration for Local & Vercel Deployment
 const express = require('express');
 const path = require('path');
 
@@ -23,7 +23,12 @@ app.use((req, res) => {
   res.status(404).redirect('/dashboard');
 });
 
-// Start Express HTTP Server
-app.listen(PORT, () => {
-  console.log(`✨ Gunnu's Voice server is running gracefully at http://localhost:${PORT}`);
-});
+// Start Express HTTP Server locally if not running on Vercel
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✨ Gunnu's Voice server is running gracefully at http://localhost:${PORT}`);
+  });
+}
+
+// Export app for Vercel Serverless Function deployment
+module.exports = app;
