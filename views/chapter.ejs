@@ -1,0 +1,161 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<div class="chapter-page py-5 mt-5">
+  <div class="container py-4">
+
+    <!-- Top Navigation breadcrumb -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <a href="/dashboard" class="btn btn-outline-secondary rounded-pill btn-sm">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+      </a>
+      <span class="badge <%= isLocked ? 'bg-secondary' : 'bg-pink' %> text-white rounded-pill px-3 py-2">
+        Chapter <%= chapter.id %> of 12 <%= isLocked ? '(Locked 🔒)' : '(Unlocked)' %>
+      </span>
+    </div>
+
+    <% if (isLocked) { %>
+      <!-- Locked Chapter Notice View -->
+      <div class="card border-0 rounded-4 shadow-sm p-5 text-center bg-white my-5 max-w-700 mx-auto">
+        <div class="lock-icon-circle mx-auto mb-3 bg-light-pink text-pink fs-1 p-4 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+          <i class="fa-solid fa-lock display-4"></i>
+        </div>
+        <h2 class="font-serif fw-bold text-dark mb-2">Chapter <%= chapter.id %> is Locked 🔒</h2>
+        <p class="text-muted fs-5 mb-4">
+          This chapter will unlock when <strong>Gunnu</strong> reaches <strong>Month <%= chapter.id %></strong>!
+        </p>
+        <div class="p-3 bg-light-cream rounded-3 mb-4 d-inline-block mx-auto max-w-500">
+          <span class="small text-dark font-serif fw-bold d-block mb-1">Sneak Peek: "<%= chapter.title %>"</span>
+          <span class="small text-muted mb-0"><%= chapter.subtitle %></span>
+        </div>
+        <div>
+          <a href="/dashboard" class="btn btn-luxury-primary rounded-pill px-5 py-3 shadow-glow">
+            <i class="fa-solid fa-arrow-left me-2"></i> Return to Dashboard
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      <!-- Unlocked Chapter Content -->
+      <div class="chapter-hero-card card border-0 rounded-4 shadow-sm overflow-hidden mb-5">
+        <div class="row g-0 align-items-center">
+          <div class="col-lg-6">
+            <div class="chapter-hero-img-wrapper position-relative">
+              <img src="<%= chapter.image %>" alt="<%= chapter.title %>" class="img-fluid w-100 object-fit-cover chapter-hero-img" id="chapterHeroImg">
+            </div>
+          </div>
+          <div class="col-lg-6 p-4 p-md-5 bg-white">
+            <span class="badge badge-luxury-gold mb-3">Month <%= chapter.id %> Chapter Story</span>
+            <h1 class="display-4 font-serif fw-bold text-dark mb-2"><%= chapter.title %></h1>
+            <p class="fs-5 text-muted lead mb-4"><%= chapter.subtitle %></p>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+              <button class="btn btn-audio-speak rounded-pill px-4" id="speakChapterMsgBtn">
+                <i class="fa-solid fa-volume-high me-2 text-primary"></i> Hear Gunnu's Voice
+              </button>
+              
+              <!-- Change Month Photo Controls -->
+              <button class="btn btn-outline-pink rounded-pill px-4" id="chapterDriveBtn" data-chapter="<%= chapter.id %>">
+                <i class="fa-brands fa-google-drive me-2 text-success"></i> Set Month <%= chapter.id %> Drive Link
+              </button>
+            </div>
+            
+            <span class="small text-muted"><i class="fa-solid fa-heart text-pink me-1"></i> Special Message for Mumma & Papa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emotional Message Quote Box -->
+      <div class="card card-baby-message border-0 rounded-4 shadow-sm p-4 p-md-5 mb-5 bg-light-pink position-relative">
+        <div class="quote-mark start"><i class="fa-solid fa-quote-left"></i></div>
+        <div class="text-center max-w-800 mx-auto py-2">
+          <h2 class="font-serif text-dark fw-bold mb-3" id="chapterMessageText">
+            "<%= chapter.message %>"
+          </h2>
+          <p class="fs-6 text-pink font-sans fw-semibold mb-0">— Dedicated to Mumma & Papa</p>
+        </div>
+        <div class="quote-mark end"><i class="fa-solid fa-quote-right"></i></div>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <!-- Developmental Milestones -->
+        <div class="col-lg-7">
+          <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100">
+            <h3 class="font-serif fw-bold mb-3"><i class="fa-solid fa-sparkles text-warning me-2"></i> Developmental Achievements & Milestones</h3>
+            <p class="text-muted small mb-4">What Gunnu usually achieves during Month <%= chapter.id %></p>
+
+            <div class="list-group list-group-flush">
+              <% chapter.development.forEach(function(item) { %>
+                <div class="list-group-item bg-transparent border-0 px-0 py-3 d-flex align-items-center gap-3">
+                  <div class="icon-circle-sm bg-pink-light text-pink">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-0"><%= item %></h6>
+                    <span class="small text-muted">Month <%= chapter.id %> Milestone</span>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photoshoot & Checklist Sidebar -->
+        <div class="col-lg-5">
+          <!-- Monthly Photoshoot Mission -->
+          <div class="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="icon-circle bg-gold-light text-warning fs-4">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <div>
+                <h5 class="font-serif fw-bold mb-0">Photoshoot Mission</h5>
+                <span class="small text-muted">Theme: <%= chapter.photoshootTitle %></span>
+              </div>
+            </div>
+            <p class="fw-bold text-dark mb-2"><%= chapter.mission %></p>
+            <p class="small text-muted mb-0">Capture high-resolution family photos with Mumma & Papa in natural morning light.</p>
+          </div>
+
+          <!-- Memories Checklist -->
+          <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+            <h5 class="font-serif fw-bold mb-3"><i class="fa-solid fa-list-check me-2 text-primary"></i> Memory Checklist</h5>
+            <ul class="list-unstyled mb-0">
+              <% chapter.checklist.forEach(function(checkItem, idx) { %>
+                <li class="py-2 border-bottom d-flex align-items-center gap-2">
+                  <i class="fa-regular fa-square-check text-pink fs-5"></i>
+                  <span class="text-dark font-sans small"><%= checkItem %></span>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter Navigation Footer -->
+      <div class="chapter-nav-bar d-flex justify-content-between align-items-center p-4 bg-white rounded-4 shadow-sm border">
+        <% if (prevChapter) { %>
+          <a href="/chapter/<%= prevChapter.id %>" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fa-solid fa-arrow-left me-2"></i> Month <%= prevChapter.id %>: <%= prevChapter.title %>
+          </a>
+        <% } else { %>
+          <div></div>
+        <% } %>
+
+        <a href="/dashboard" class="btn btn-light rounded-pill px-4 border">Dashboard</a>
+
+        <% if (nextChapter) { %>
+          <a href="/chapter/<%= nextChapter.id %>" class="btn btn-luxury-primary rounded-pill px-4">
+            Month <%= nextChapter.id %>: <%= nextChapter.title %> <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
+        <% } else { %>
+          <div></div>
+        <% } %>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<script src="/js/chapter.js"></script>
+
+<%- include('partials/footer') %>

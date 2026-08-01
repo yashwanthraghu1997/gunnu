@@ -1,0 +1,48 @@
+<!-- Luxury Apple-Inspired Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top luxury-navbar">
+  <div class="container-fluid px-lg-5">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard">
+      <span class="brand-heart-sparkle"><i class="fa-solid fa-heart"></i></span>
+      <span class="brand-title">Gunnu's Voice</span>
+    </a>
+    
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#luxuryNav" aria-controls="luxuryNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="luxuryNav">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard"><i class="fa-solid fa-house me-1"></i> Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chapter/<%= typeof age !== 'undefined' ? age.currentChapterNum : 1 %>">
+            <i class="fa-solid fa-book-open me-1"></i> Current Chapter (Month <%= typeof age !== 'undefined' ? age.currentChapterNum : 1 %>)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/intro"><i class="fa-solid fa-sparkles me-1"></i> Replay Story</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Audio Synth / Ambient Lullaby Sound Button -->
+        <button id="audioToggleBtn" class="btn btn-audio-pill" title="Toggle Magical Ambient Lullaby">
+          <i class="fa-solid fa-music text-primary me-2"></i>
+          <span id="audioStatusText">Play Music</span>
+        </button>
+
+        <!-- Parent Greeting Badge -->
+        <div class="parent-badge d-none d-md-flex align-items-center gap-2">
+          <div class="avatar-mini">
+            <i class="fa-solid fa-baby"></i>
+          </div>
+          <div class="parent-text">
+            <span class="d-block small text-muted">Dedicated to</span>
+            <strong class="parent-names">Mumma & Papa</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

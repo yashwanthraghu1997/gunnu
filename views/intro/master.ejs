@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+
+<!-- Intro Experience Wrapper -->
+<div class="intro-wrapper position-relative overflow-hidden min-vh-100 d-flex align-items-center justify-content-center">
+  <!-- Audio & Skip Controls top bar -->
+  <div class="intro-top-bar d-flex justify-content-between align-items-center px-4 py-3 position-absolute top-0 w-100 z-3">
+    <a href="/dashboard" class="text-white-50 text-decoration-none small hover-white">
+      <i class="fa-solid fa-sparkles text-warning me-1"></i> Gunnu's Voice
+    </a>
+    <div class="d-flex align-items-center gap-3">
+      <!-- Screen Step Indicator Pill -->
+      <div class="intro-step-pill rounded-pill bg-white-10 px-3 py-1 text-white-70 small">
+        Step <span id="currentStepNum">1</span> of 4
+      </div>
+      <a href="/dashboard" class="btn btn-sm btn-outline-light rounded-pill px-3">
+        Skip to Dashboard <i class="fa-solid fa-angles-right ms-1"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="container intro-container py-5 z-2">
+    <%- include('screen1') %>
+    <%- include('screen2') %>
+    <%- include('screen3') %>
+    <%- include('screen4') %>
+  </div>
+</div>
+
+<script src="/js/intro.js"></script>
+
+<%- include('../partials/footer') %>

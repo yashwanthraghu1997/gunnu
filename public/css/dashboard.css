@@ -1,0 +1,320 @@
+/* dashboard.css - Main Dashboard & Memory Tree Styling */
+.avatar-lg {
+  width: 68px;
+  height: 68px;
+  object-fit: cover;
+  border: 3px solid var(--primary-pink);
+}
+
+.icon-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-circle-sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-pink-light { background-color: var(--light-pink); }
+.bg-gold-light { background-color: #FFF4E5; }
+
+.bg-gradient-pink {
+  background: linear-gradient(90deg, #FF7A9C 0%, #FF9EB5 100%);
+}
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #FFF6E9 0%, #FFE9D6 100%);
+}
+
+.card-baby-message {
+  background: linear-gradient(135deg, #FFF0F4 0%, #FFF9F5 100%);
+  border: 1px solid #FFE0E8 !important;
+}
+
+.quote-watermark {
+  position: absolute;
+  right: -10px;
+  bottom: -20px;
+  font-size: 8rem;
+  color: rgba(255, 122, 156, 0.06);
+  pointer-events: none;
+}
+
+.dev-item-card {
+  transition: all 0.25s ease;
+}
+.dev-item-card:hover {
+  background-color: #FFFFFF !important;
+  border-color: var(--primary-pink) !important;
+  box-shadow: 0 5px 15px rgba(255, 122, 156, 0.1);
+}
+
+.custom-check:checked {
+  background-color: var(--primary-pink);
+  border-color: var(--primary-pink);
+}
+
+.checklist-item-row {
+  transition: background-color 0.2s ease;
+}
+.checklist-item-row:hover {
+  background-color: #FFF6F8;
+}
+
+/* Polaroid Photo Scrapbook Styling - Full Image Contain & Hover Zoom */
+.polaroid-frame {
+  background: #FFFFFF;
+  padding: 14px 14px 20px 14px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.09);
+  border: 1px solid #F0E6DF;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+.polaroid-frame:hover {
+  box-shadow: 0 20px 45px rgba(255, 122, 156, 0.2);
+}
+.polaroid-tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 76px;
+  height: 24px;
+  background: rgba(255, 230, 200, 0.85);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  z-index: 3;
+  border-radius: 2px;
+}
+
+/* Image Container with Overflow Hidden for Zoom */
+.polaroid-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #FAF6F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Full Image Fit & Smooth Zoom on Hover */
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ENTIRE IMAGE FULLY VISIBLE WITHOUT CROPPING */
+  transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: zoom-in;
+  padding: 4px;
+}
+.polaroid-frame:hover .polaroid-img {
+  transform: scale(1.18); /* SMOOTH HOVER ZOOM */
+}
+
+/* Zoomable Modal Lightbox Styling */
+.zoom-modal-stage {
+  max-height: 75vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 15, 20, 0.95);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: grab;
+}
+.zoom-modal-stage:active {
+  cursor: grabbing;
+}
+
+#lightboxModalImg {
+  max-height: 70vh;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: center center;
+}
+
+.zoom-controls-bar {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 50rem;
+  padding: 0.35rem 1rem;
+}
+
+/* Chapter Card Mini Polaroid Photo */
+.chapter-card .polaroid-frame {
+  max-width: 100%;
+  padding: 10px 10px 14px 10px;
+}
+.chapter-card .polaroid-img-wrapper {
+  height: 180px;
+}
+.chapter-card .polaroid-img {
+  object-fit: contain;
+}
+
+/* Interactive Memory Tree Styling */
+.memory-tree-wrapper {
+  max-width: 320px;
+  position: relative;
+}
+.tree-art {
+  border: 3px solid #FFF2E8;
+  max-height: 270px;
+  object-fit: cover;
+  width: 100%;
+  transition: filter 0.5s ease;
+}
+
+.tree-blossom-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.blossom-particle {
+  position: absolute;
+  font-size: 1.2rem;
+}
+.blossom-particle.b1 { top: 20%; left: 30%; animation: floatSlow 3s infinite ease-in-out; }
+.blossom-particle.b2 { top: 35%; right: 25%; animation: floatSlow 4s infinite ease-in-out 1s; }
+.blossom-particle.b3 { top: 50%; left: 45%; animation: floatSlow 3.5s infinite ease-in-out 0.5s; }
+
+/* Interactive Golden Leaf Badges along Tree Branches */
+.tree-leaf-node {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #EAE0D7;
+  color: #8C7A6B;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.tree-leaf-node.active {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-color: #FFFFFF;
+  color: #4A2800;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 165, 0, 0.4);
+  animation: pulseFast 2s infinite ease-in-out;
+}
+.tree-leaf-node:hover {
+  transform: scale(1.25);
+  z-index: 10;
+}
+
+/* Branch Leaf Positions */
+.leaf-pos-1 { top: 15%; left: 25%; }
+.leaf-pos-2 { top: 18%; left: 55%; }
+.leaf-pos-3 { top: 22%; right: 18%; }
+.leaf-pos-4 { top: 32%; left: 18%; }
+.leaf-pos-5 { top: 35%; left: 45%; }
+.leaf-pos-6 { top: 38%; right: 22%; }
+.leaf-pos-7 { top: 48%; left: 28%; }
+.leaf-pos-8 { top: 50%; right: 30%; }
+.leaf-pos-9 { top: 60%; left: 35%; }
+.leaf-pos-10 { top: 62%; right: 25%; }
+.leaf-pos-11 { top: 72%; left: 42%; }
+.leaf-pos-12 { top: 75%; right: 38%; }
+
+/* Timeline Horizontal Scroll */
+.timeline-horizontal-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-pink) #F0F0F0;
+  -webkit-overflow-scrolling: touch;
+}
+.timeline-horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.timeline-horizontal-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary-pink);
+  border-radius: 10px;
+}
+
+.timeline-node-card {
+  min-width: 160px;
+  background: var(--white);
+  transition: all 0.3s ease;
+}
+.node-completed {
+  border-color: #A3E635 !important;
+  background: #F7FEE7;
+}
+.node-current {
+  border-color: var(--primary-pink) !important;
+  box-shadow: 0 0 15px rgba(255, 122, 156, 0.25);
+  background: #FFF5F7;
+  transform: scale(1.03);
+}
+.node-locked {
+  opacity: 0.7;
+}
+
+.node-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F8F9FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* Soundboard Pill Buttons */
+.btn-sound-pill {
+  background: var(--white);
+  border: 1px solid #FFE0E8;
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+.btn-sound-pill:hover {
+  background: var(--light-pink);
+  color: var(--primary-pink);
+  border-color: var(--primary-pink);
+}
+
+/* Filter Nav Pills */
+.nav-pills-template .nav-link {
+  color: var(--text-dark);
+  font-weight: 500;
+  border-radius: 50rem;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.9rem;
+  background: #FFFFFF;
+  border: 1px solid #EAE0D7;
+  transition: all 0.25s ease;
+}
+.nav-pills-template .nav-link.active {
+  background: var(--primary-pink);
+  color: #FFFFFF;
+  border-color: var(--primary-pink);
+  box-shadow: 0 4px 12px rgba(255, 122, 156, 0.3);
+}

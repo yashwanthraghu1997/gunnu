@@ -1,0 +1,198 @@
+/* style.css - Main Luxury Design System Tokens & Base Styles */
+:root {
+  --bg-porcelain: #FFF9F5;
+  --primary-pink: #FF7A9C;
+  --primary-pink-hover: #ff5781;
+  --light-pink: #FFEBF0;
+  --accent-gold: #C89B7B;
+  --accent-gold-light: #F9F1EB;
+  --text-dark: #2D2D2D;
+  --text-muted: #6C757D;
+  --white: #FFFFFF;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-soft: 0 10px 30px rgba(255, 122, 156, 0.08);
+  --shadow-glow: 0 10px 25px rgba(255, 122, 156, 0.35);
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body.luxury-theme {
+  background-color: var(--bg-porcelain);
+  color: var(--text-dark);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Typography Helpers */
+.font-serif { font-family: var(--font-serif); }
+.font-sans { font-family: var(--font-sans); }
+.text-serif { font-family: var(--font-serif); }
+
+.text-pink { color: var(--primary-pink) !important; }
+.text-accent { color: var(--accent-gold) !important; }
+.bg-light-pink { background-color: var(--light-pink) !important; }
+.bg-light-cream { background-color: #FFF2E8 !important; }
+
+.text-gradient-pink {
+  background: linear-gradient(135deg, #FF7A9C 0%, #C89B7B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FFE29F 0%, #FFAE88 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Luxury Buttons */
+.btn-luxury-primary {
+  background: linear-gradient(135deg, var(--primary-pink) 0%, #ff6b8e 100%);
+  color: var(--white) !important;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.btn-luxury-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+  background: linear-gradient(135deg, #ff5b83 0%, var(--primary-pink) 100%);
+}
+
+.btn-audio-pill {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 122, 156, 0.3);
+  border-radius: 50rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+.btn-audio-pill:hover {
+  background: var(--light-pink);
+  transform: scale(1.03);
+}
+
+.btn-audio-speak {
+  background: #FFF0F4;
+  color: var(--primary-pink);
+  border: 1px solid var(--primary-pink);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-audio-speak:hover {
+  background: var(--primary-pink);
+  color: var(--white);
+}
+
+/* Badges & Glass Cards */
+.badge-luxury-gold {
+  background: linear-gradient(135deg, #F5D0A9 0%, var(--accent-gold) 100%);
+  color: #3D2314;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 50rem;
+}
+
+.badge-luxury-pink {
+  background: var(--light-pink);
+  color: var(--primary-pink);
+  font-weight: 600;
+}
+
+.card-luxury-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Navbar */
+.luxury-navbar {
+  background: rgba(255, 249, 245, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 122, 156, 0.15);
+  padding: 0.8rem 0;
+  z-index: 1050;
+}
+.brand-heart-sparkle {
+  color: var(--primary-pink);
+  font-size: 1.3rem;
+}
+.brand-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--text-dark);
+}
+.navbar-nav .nav-link {
+  color: var(--text-dark);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: color 0.2s ease;
+}
+.navbar-nav .nav-link:hover {
+  color: var(--primary-pink);
+}
+
+.parent-badge {
+  background: var(--white);
+  padding: 0.35rem 0.9rem;
+  border-radius: 50rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  border: 1px solid #F3EAE3;
+}
+.avatar-mini {
+  width: 32px;
+  height: 32px;
+  background: var(--light-pink);
+  color: var(--primary-pink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.parent-names {
+  color: var(--text-dark);
+  font-size: 0.85rem;
+}
+
+/* Footer */
+.luxury-footer {
+  background: #FFF2E9;
+  border-top: 1px solid #F3EAE3;
+}
+.footer-quote {
+  color: #4A3A31;
+}
+.footer-link {
+  color: #7A665A;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+.footer-link:hover {
+  color: var(--primary-pink);
+}
+.footer-divider {
+  width: 60px;
+  height: 2px;
+  background: var(--accent-gold);
+  border-radius: 2px;
+}

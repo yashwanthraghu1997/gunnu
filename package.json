@@ -1,0 +1,23 @@
+{
+  "name": "babys-voice",
+  "version": "1.0.0",
+  "description": "A luxury storytelling website digital gift for new parents Akanksha & Mohit",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "baby",
+    "storytelling",
+    "digital-gift",
+    "express",
+    "ejs"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.19.2"
+  }
+}

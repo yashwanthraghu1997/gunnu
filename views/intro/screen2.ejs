@@ -1,0 +1,36 @@
+<!-- Intro Screen 2: Family Photo & Welcome Message -->
+<div class="intro-screen" id="screen2">
+  <div class="intro-content text-center">
+    <div class="family-photo-wrapper mb-4 mx-auto">
+      <div class="family-photo-frame shadow-luxury">
+        <img src="<%= baby.heroImage %>" alt="Family Photo of <%= baby.mother %> & <%= baby.father %>" class="img-fluid rounded-4 family-img">
+      </div>
+      <div class="floating-hearts-overlay">
+        <i class="fa-solid fa-heart heart-float h1"></i>
+        <i class="fa-solid fa-heart heart-float h2"></i>
+      </div>
+    </div>
+
+    <div class="intro-card-glass max-w-700 mx-auto p-4 p-md-5 rounded-4 shadow-sm mb-4">
+      <h2 class="text-serif text-dark fw-bold mb-3">Hi Mumma... Hi Papa...</h2>
+      <p class="fs-5 text-secondary lead mb-3">
+        Thank you for bringing me into this beautiful world with your warmth and blessings.
+      </p>
+      <p class="fs-5 text-secondary lead mb-3">
+        Thank you for welcoming me home.
+      </p>
+      <p class="fs-4 text-primary font-serif fw-bold mb-0">
+        I already feel so loved. ❤️
+      </p>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3">
+      <button class="btn btn-outline-secondary rounded-pill px-4 prev-screen-btn" data-prev="screen1">
+        <i class="fa-solid fa-arrow-left me-2"></i> Back
+      </button>
+      <button class="btn btn-luxury-primary btn-lg rounded-pill px-5 py-3 shadow-glow next-screen-btn" data-next="screen3">
+        Continue <i class="fa-solid fa-arrow-right ms-2 fs-6"></i>
+      </button>
+    </div>
+  </div>
+</div>

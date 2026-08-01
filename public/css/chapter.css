@@ -1,0 +1,36 @@
+/* chapter.css - Dedicated Chapter Page Styling */
+.chapter-hero-card {
+  background: #FFFFFF;
+  border-radius: 1.5rem !important;
+  border: 1px solid rgba(255, 122, 156, 0.15) !important;
+}
+
+.chapter-hero-img-wrapper {
+  overflow: hidden;
+  height: 100%;
+  min-height: 380px;
+  max-height: 480px;
+  background-color: #FFF9F5;
+}
+
+.chapter-hero-img {
+  height: 100%;
+  min-height: 380px;
+  max-height: 480px;
+  object-fit: cover;
+  object-position: center 20%;
+  transition: transform 0.5s ease;
+}
+
+.chapter-hero-card:hover .chapter-hero-img {
+  transform: scale(1.02);
+}
+
+.chapter-nav-bar {
+  background: #FFFFFF;
+  border: 1px solid #EAE0D7 !important;
+}
+
+.max-w-700 { max-width: 700px; }
+.max-w-500 { max-width: 500px; }
+.max-w-800 { max-width: 800px; }

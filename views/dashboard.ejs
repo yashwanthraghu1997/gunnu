@@ -1,0 +1,489 @@
+<%- include('partials/header') %>
+  <%- include('partials/navbar') %>
+
+    <div class="dashboard-page py-4 py-lg-5 mt-4 mt-lg-5">
+      <div class="container py-2 py-lg-4">
+
+        <!-- 1. HEADER SECTION -->
+        <div class="row align-items-center mb-4 mb-lg-5 g-3">
+          <div class="col-lg-8">
+            <div class="greeting-pill mb-2">
+              <span class="badge badge-luxury-pink px-3 py-2 rounded-pill">
+                <i class="fa-solid fa-heart pulse-fast me-1 text-danger"></i> Digital Gift View
+              </span>
+            </div>
+            <h1 class="display-4 font-serif fw-bold text-dark mb-2">
+              Hello <span class="text-pink">Mumma</span> ❤️<br>
+              Hello <span class="text-accent">Papa</span> ❤️
+            </h1>
+
+            <!-- Live Ticking Age Badge -->
+            <div
+              class="age-live-badge d-inline-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-pill bg-white shadow-sm border border-light mt-1">
+              <i class="fa-solid fa-clock text-primary fs-5"></i>
+              <span class="fs-6 fs-md-5 text-dark fw-semibold">
+                Today I am <span id="calculatedAgeText" class="text-primary fw-bold">
+                  <% if(age.months> 0) { %>
+                    <%= age.months %> Month<%= age.months> 1 ? 's' : '' %> <%= age.days %> Day<%= age.days !==1 ? 's'
+                            : '' %>
+                            <% } else { %>
+                              <%= age.days %> Day<%= age.days !==1 ? 's' : '' %>
+                                  <% } %>
+                </span>
+                <span id="liveSecondsClock" class="badge bg-light-pink text-pink rounded-pill ms-2 small">00h 00m
+                  00s</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="col-lg-4 text-lg-end">
+            <div class="baby-quick-card p-3 bg-white rounded-4 shadow-sm d-inline-flex align-items-center gap-3">
+              <img src="<%= baby.babyPortrait %>" alt="<%= baby.nickname %>" class="rounded-circle avatar-lg shadow-sm">
+              <div class="text-start">
+                <h5 class="fw-bold mb-0 text-serif">Gunnu</h5>
+                <p class="small text-muted mb-1">Born <%= new Date(baby.dob).toLocaleDateString('en-US', { month: 'long'
+                    , day: 'numeric' , year: 'numeric' }) %>
+                </p>
+                <span class="badge bg-light-pink text-pink rounded-pill px-3">Our Little Gunnu ❤️</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. JOURNEY PROGRESS CARD -->
+        <div class="card card-luxury-glass border-0 shadow-sm rounded-4 p-3 p-md-4 mb-4 mb-lg-5">
+          <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <div class="d-flex align-items-center gap-3">
+                <div class="icon-circle bg-pink-light text-pink fs-3">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                  <h5 class="font-serif fw-bold mb-1">Gunnu's First Year Progress</h5>
+                  <p class="text-muted small mb-0">Tracking 365 magical days of growth</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="fw-semibold text-dark">Day <%= age.totalDays %> / 365</span>
+                <span class="fw-bold text-pink">Chapter <%= currentMonth.id %> of 12</span>
+              </div>
+              <div class="progress progress-luxury rounded-pill shadow-inner" style="height: 14px;">
+                <div class="progress-bar bg-gradient-pink rounded-pill progress-bar-striped progress-bar-animated"
+                  role="progressbar" style="width: <%= Math.min(Math.round((age.totalDays / 365) * 100), 100) %>%;"
+                  aria-valuenow="<%= age.totalDays %>" aria-valuemin="0" aria-valuemax="365">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. TODAY'S BABY MESSAGE & SOUNDBOARD ROW -->
+        <div class="row g-4 mb-4 mb-lg-5">
+          <!-- Today's Message Card -->
+          <div class="col-lg-7">
+            <div
+              class="card card-baby-message border-0 rounded-4 shadow-sm h-100 p-4 position-relative overflow-hidden">
+              <div class="quote-watermark"><i class="fa-solid fa-quote-right"></i></div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-white text-dark rounded-pill px-3 py-1 shadow-xs font-sans">
+                  <i class="fa-solid fa-sparkles text-warning me-1"></i> Today's Message from Gunnu
+                </span>
+                <button class="btn btn-sm btn-outline-pink rounded-pill" id="newBabyMsgBtn">
+                  <i class="fa-solid fa-shuffle me-1"></i> New Message
+                </button>
+              </div>
+
+              <div class="message-body my-auto">
+                <h3 class="font-serif text-dark fw-bold mb-3" id="babyMessageText">
+                  "<%= todaysMessage.text %>"
+                </h3>
+                <p class="text-muted small italic text-end mb-0">— With endless love, your Gunnu</p>
+              </div>
+
+              <div class="mt-4 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <button class="btn btn-audio-speak rounded-pill btn-sm px-4" id="speakMessageBtn">
+                  <i class="fa-solid fa-volume-high me-2 text-primary"></i> Hear Gunnu's Voice
+                </button>
+
+                <!-- Soundboard Action Pills -->
+                <div class="soundboard-group d-flex gap-2">
+                  <button class="btn btn-sound-pill btn-sm rounded-pill px-3" id="playCooBtn">
+                    <i class="fa-solid fa-face-smile text-warning me-1"></i> Sweet Coo
+                  </button>
+                  <button class="btn btn-sound-pill btn-sm rounded-pill px-3" id="playGiggleBtn">
+                    <i class="fa-solid fa-laugh-beam text-pink me-1"></i> Giggles
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Milestone Notice -->
+          <div class="col-lg-5">
+            <div
+              class="card card-upcoming border-0 rounded-4 shadow-sm h-100 p-4 bg-gradient-gold text-dark position-relative">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-dark text-white rounded-pill px-3 py-1">Upcoming</span>
+                <i class="fa-solid fa-bell text-warning animate-bounce"></i>
+              </div>
+
+              <div class="my-auto">
+                <h4 class="font-serif fw-bold mb-2">In about <%= age.daysUntilNextMonth %> Days...</h4>
+                <p class="fs-5 text-dark-70 mb-3">
+                  <%= currentMonth.upcomingMilestone %>
+                </p>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between pt-3 border-top border-dark-10">
+                <span class="small fw-semibold"><i class="fa-solid fa-camera me-1"></i> Prepare your camera ❤️</span>
+                <a href="/chapter/<%= currentMonth.id %>" class="btn btn-dark btn-sm rounded-pill px-3">View Chapter
+                  Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. CURRENT DEVELOPMENT & POLAROID MEMORY TEMPLATE ROW -->
+        <div class="row g-4 mb-4 mb-lg-5">
+          <!-- Current Development Card -->
+          <div class="col-lg-7">
+            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100">
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                  <h3 class="font-serif fw-bold mb-1">At My Age (Month <%= currentMonth.id %>)</h3>
+                  <p class="text-muted small mb-0">What Gunnu is naturally learning & mastering for Mumma & Papa</p>
+                </div>
+                <span class="badge bg-light-pink text-pink fs-6 px-3 py-2 rounded-pill">
+                  <%= currentMonth.title %>
+                </span>
+              </div>
+
+              <div class="row g-3">
+                <% currentMonth.development.forEach(function(item, idx) { %>
+                  <div class="col-md-6">
+                    <div
+                      class="dev-item-card p-3 rounded-3 bg-light-cream border border-light d-flex align-items-center gap-3">
+                      <div class="dev-check-icon text-success fs-4">
+                        <i class="fa-solid fa-circle-check"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold mb-0 text-dark">
+                          <%= item %>
+                        </h6>
+                        <span class="small text-muted">Month <%= currentMonth.id %> Milestone</span>
+                      </div>
+                    </div>
+                  </div>
+                  <% }); %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Polaroid Scrapbook Template Preview for Current Month -->
+          <div class="col-lg-5">
+            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100 text-center position-relative">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="font-serif fw-bold mb-0"><i class="fa-solid fa-images text-primary me-2"></i> Memory
+                  Scrapbook Frame</h5>
+                <span class="badge bg-light text-muted rounded-pill">Month <%= currentMonth.id %></span>
+              </div>
+
+              <div class="polaroid-frame my-auto mx-auto rotate-1">
+                <div class="polaroid-tape"></div>
+                <div class="polaroid-img-wrapper">
+                  <img src="<%= currentMonth.image %>" id="scrapbookPhotoPreview" alt="Polaroid Memory"
+                    class="polaroid-img shadow-xs lightbox-trigger" data-title="Month <%= currentMonth.id %> Memory">
+                </div>
+                <div class="pt-2 text-center">
+                  <span class="font-serif fw-bold text-dark small d-block" id="scrapbookPhotoCaption">Month <%=
+                      currentMonth.id %>: <%= currentMonth.photoshootTitle %></span>
+                  <span class="small text-muted">Mumma & Papa's Sweet Gunnu (Click to Zoom 🔍)</span>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-top text-center">
+                <button class="btn btn-luxury-primary rounded-pill btn-sm py-2 px-4 shadow-sm open-drive-modal-btn" data-chapter="<%= currentMonth.id %>">
+                  <i class="fa-brands fa-google-drive me-2 text-warning fs-6"></i> Set Month <%= currentMonth.id %> Google Drive Photo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. MEMORIES CHECKLIST & INTERACTIVE MEMORY TREE ROW -->
+        <div class="row g-4 mb-4 mb-lg-5">
+          <!-- Memories Checklist Card -->
+          <div class="col-lg-6">
+            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h3 class="font-serif fw-bold mb-1">Memories To Capture</h3>
+                  <p class="text-muted small mb-0">Check off memories as you capture them during Month <%=
+                      currentMonth.id %>
+                  </p>
+                </div>
+                <span class="badge bg-light-pink text-pink rounded-pill px-3 py-1" id="checklistProgressBadge">0 / <%=
+                    currentMonth.checklist.length %> Completed</span>
+              </div>
+
+              <div class="checklist-container mt-3">
+                <% currentMonth.checklist.forEach(function(item, index) { %>
+                  <div
+                    class="checklist-item-row p-3 rounded-3 mb-2 d-flex align-items-center justify-content-between border">
+                    <div class="form-check d-flex align-items-center gap-3 mb-0">
+                      <input class="form-check-input custom-check memory-checkbox" type="checkbox"
+                        id="check-<%= index %>" data-index="<%= index %>" data-chapter="<%= currentMonth.id %>">
+                      <label class="form-check-label fw-semibold text-dark mb-0 fs-6 pointer" for="check-<%= index %>">
+                        <%= item %>
+                      </label>
+                    </div>
+                    <span class="badge bg-light text-muted rounded-pill small">Photo idea</span>
+                  </div>
+                  <% }); %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Memory Tree Card -->
+          <div class="col-lg-6">
+            <div
+              class="card border-0 rounded-4 shadow-sm p-4 bg-white h-100 text-center position-relative overflow-hidden">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="text-start">
+                  <h3 class="font-serif fw-bold mb-1">The Memory Tree</h3>
+                  <p class="text-muted small mb-0">Each unlocked month blooms a golden leaf on the branches!</p>
+                </div>
+                <span class="badge badge-luxury-gold px-3 py-1 rounded-pill" id="treeLevelBadge">
+                  <i class="fa-solid fa-tree me-1"></i> Level <%= currentMonth.id %> Bloomed
+                </span>
+              </div>
+
+              <!-- Memory Tree Visual Wrapper with 12 Leaf Nodes -->
+              <div class="memory-tree-wrapper mx-auto position-relative my-2">
+                <img src="<%= baby.memoryTree %>" alt="Memory Tree Illustration"
+                  class="img-fluid rounded-4 tree-art shadow-xs" id="memoryTreeImage">
+
+                <!-- 12 Golden Leaf Nodes on Tree Branches -->
+                <% months.forEach(function(m) { %>
+                  <div
+                    class="tree-leaf-node leaf-pos-<%= m.id %> <%= m.status === 'completed' || m.status === 'current' ? 'active' : '' %>"
+                    data-month="<%= m.id %>" data-title="Month <%= m.id %>: <%= m.title %>"
+                    title="Month <%= m.id %>: <%= m.title %>">
+                    <% if (m.status==='completed' || m.status==='current' ) { %>
+                      🍃
+                      <% } else { %>
+                        🔒
+                        <% } %>
+                  </div>
+                  <% }); %>
+
+                    <!-- Blossom sparkles overlay -->
+                    <div class="tree-blossom-overlay" id="treeBlossomOverlay">
+                      <span class="blossom-particle b1"><i class="fa-solid fa-sparkles text-warning"></i></span>
+                      <span class="blossom-particle b2"><i class="fa-solid fa-heart text-pink"></i></span>
+                      <span class="blossom-particle b3"><i class="fa-solid fa-star text-gold"></i></span>
+                    </div>
+              </div>
+
+              <div class="p-2 rounded-3 bg-light-cream mt-2 border border-light">
+                <span class="small text-dark fw-bold d-block" id="treeStatusTitle">Month <%= currentMonth.id %>: <%=
+                      currentMonth.title %></span>
+                <span class="small text-muted" id="treeStatusSubtitle">
+                  <%= currentMonth.subtitle %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. JOURNEY TIMELINE -->
+        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4 mb-lg-5">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h3 class="font-serif fw-bold mb-1">Gunnu's Journey Timeline</h3>
+              <p class="text-muted small mb-0">Scroll horizontally to view past, current and upcoming milestones</p>
+            </div>
+            <span class="badge bg-light-cream text-dark px-3 py-2 rounded-pill border">12 Months</span>
+          </div>
+
+          <div class="timeline-horizontal-scroll pb-3">
+            <div class="d-flex gap-3 gap-md-4 align-items-center min-w-max">
+              <% timeline.forEach(function(item) { %>
+                <div
+                  class="timeline-node-card p-3 rounded-4 border text-center <%= item.status === 'completed' ? 'node-completed' : (item.status === 'current' ? 'node-current' : 'node-locked') %>">
+                  <div class="node-icon-circle mx-auto mb-2">
+                    <% if(item.status==='completed' ) { %>
+                      <i class="fa-solid fa-check text-success"></i>
+                      <% } else if(item.status==='current' ) { %>
+                        <i class="fa-solid fa-heart text-pink pulse-fast"></i>
+                        <% } else { %>
+                          <i class="fa-solid fa-lock text-secondary"></i>
+                          <% } %>
+                  </div>
+                  <h6 class="fw-bold mb-1">
+                    <%= item.label %>
+                  </h6>
+                  <span
+                    class="badge rounded-pill <%= item.status === 'completed' ? 'bg-success' : (item.status === 'current' ? 'bg-pink' : 'bg-secondary') %> mb-2">
+                    <%= item.status.toUpperCase() %>
+                  </span>
+                  <p class="small text-muted mb-0 max-w-150 mx-auto">
+                    <%= item.description %>
+                  </p>
+                </div>
+                <% }); %>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. FILTERABLE CHAPTERS GRID WITH MONTH-WISE PHOTO SCRAPBOOKS -->
+        <div class="mb-4">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+              <h3 class="font-serif fw-bold mb-1">12 Chapters of Gunnu's First Year</h3>
+              <p class="text-muted small mb-0">Each chapter preserves its own unique photo memory!</p>
+            </div>
+
+            <!-- Filter Nav Pills -->
+            <ul class="nav nav-pills nav-pills-template gap-2" id="chapterFilterTabs">
+              <li class="nav-item">
+                <button class="nav-link active" data-filter="all">All (12)</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-filter="current">Current</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-filter="completed">Completed</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-filter="locked">Upcoming 🔒</button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="row g-4" id="chaptersGrid">
+            <% months.forEach(function(ch) { %>
+              <div class="col-md-6 col-lg-4 chapter-card-wrapper" data-status="<%= ch.status %>">
+                <div
+                  class="chapter-card p-4 rounded-4 shadow-sm bg-white h-100 d-flex flex-column justify-content-between position-relative hover-lift border-0 <%= ch.status === 'locked' ? 'opacity-75 bg-light-cream-subtle' : '' %>">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <span
+                        class="badge rounded-pill <%= ch.status === 'completed' ? 'bg-success-light text-success' : (ch.status === 'current' ? 'bg-pink-light text-pink fw-bold' : 'bg-secondary-light text-secondary') %>">
+                        Chapter <%= ch.id %> • <%= ch.status.toUpperCase() %>
+                      </span>
+                      <i
+                        class="fa-solid <%= ch.status === 'completed' ? 'fa-circle-check text-success' : (ch.status === 'current' ? 'fa-star text-warning pulse-fast' : 'fa-lock text-muted') %> fs-5"></i>
+                    </div>
+
+                    <!-- Mini Polaroid Photo Scrapbook for Month -->
+                    <div class="polaroid-frame mb-3 mx-auto text-center">
+                      <div class="polaroid-tape"></div>
+                      <div class="polaroid-img-wrapper">
+                        <img src="<%= ch.image %>" alt="Month <%= ch.id %> Memory" class="polaroid-img shadow-xs lightbox-trigger" id="chapterCardImg-<%= ch.id %>" data-title="Month <%= ch.id %> Photo">
+                      </div>
+                      <div class="pt-2">
+                        <button class="btn btn-sm btn-outline-pink rounded-pill w-100 open-drive-modal-btn" data-chapter="<%= ch.id %>">
+                          <i class="fa-brands fa-google-drive me-1 text-success"></i> Set Month <%= ch.id %> Drive Link
+                        </button>
+                      </div>
+                    </div>
+
+                    <h4 class="font-serif fw-bold text-dark mb-2">
+                      <%= ch.title %>
+                    </h4>
+                    <p class="text-muted small mb-3">
+                      <%= ch.subtitle %>
+                    </p>
+                  </div>
+
+                  <div class="pt-3 border-top mt-3">
+                    <% if (ch.status==='locked' ) { %>
+                      <a href="/chapter/<%= ch.id %>" class="btn btn-light rounded-pill w-100 btn-sm text-muted border">
+                        <i class="fa-solid fa-lock me-1"></i> Locked (Unlocks Month <%= ch.id %>)
+                      </a>
+                      <% } else { %>
+                        <a href="/chapter/<%= ch.id %>" class="btn btn-outline-dark rounded-pill w-100 btn-sm">
+                          <i class="fa-solid fa-book-open me-1"></i> Read Chapter <%= ch.id %>
+                        </a>
+                        <% } %>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ELEGANT GOOGLE DRIVE PHOTO LINK MODAL -->
+    <div class="modal fade" id="googleDriveModal" tabindex="-1" aria-labelledby="googleDriveModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-luxury">
+          <div class="modal-header border-0 bg-light-pink rounded-top-4 px-4 py-3">
+            <h5 class="modal-title font-serif fw-bold text-dark" id="googleDriveModalLabel">
+              <i class="fa-brands fa-google-drive text-warning me-2"></i> Set Google Drive Photo for Month <span id="modalMonthNumDisplay">1</span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <p class="text-muted small mb-3">
+              Paste the Google Drive link for Month <strong id="modalMonthNumSubtitle">1</strong>'s photo memory below. The latest link pasted will render as the photo for this month!
+            </p>
+            
+            <div class="mb-3">
+              <label for="driveModalInput" class="form-label font-serif fw-semibold text-dark">Google Drive Image URL</label>
+              <input type="text" id="driveModalInput" class="form-control form-control-lg rounded-pill px-4" placeholder="https://drive.google.com/file/d/1ABC.../view">
+            </div>
+
+            <div class="p-3 bg-light-cream rounded-3 small text-muted border">
+              <i class="fa-solid fa-circle-info text-primary me-1"></i> <strong>Tip:</strong> Ensure your Google Drive file access is set to <strong>"Anyone with the link can view"</strong>.
+            </div>
+          </div>
+          <div class="modal-footer border-0 px-4 pb-4 pt-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-luxury-primary rounded-pill px-5 shadow-glow" id="saveDriveModalBtn">
+              Save & Render Photo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERACTIVE ZOOMABLE PHOTO LIGHTBOX MODAL -->
+    <div class="modal fade" id="photoLightboxModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-dark border-0 rounded-4 shadow-luxury overflow-hidden">
+          <div class="modal-header border-0 bg-dark-subtle px-4 py-3 d-flex justify-content-between align-items-center">
+            <span class="text-white font-serif fw-bold fs-5" id="lightboxModalCaption">Gunnu's Memory</span>
+            
+            <!-- Zoom Controls Bar -->
+            <div class="zoom-controls-bar d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="zoomOutBtn" title="Zoom Out">
+                <i class="fa-solid fa-magnifying-glass-minus"></i>
+              </button>
+              <span class="text-white small fw-bold px-2" id="zoomLevelText">100%</span>
+              <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="zoomInBtn" title="Zoom In">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning rounded-pill px-3 ms-2" id="zoomResetBtn" title="Reset Zoom">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+
+            <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body p-0 zoom-modal-stage">
+            <img src="" id="lightboxModalImg" alt="Enlarged Photo" class="img-fluid rounded-3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+
+    <%- include('partials/footer') %>

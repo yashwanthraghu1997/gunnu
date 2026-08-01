@@ -1,0 +1,115 @@
+/* responsive.css - Mobile & Tablet Responsive Optimizations */
+
+/* Fluid Typography */
+.display-3 { font-size: clamp(2rem, 5vw, 3.5rem) !important; }
+.display-4 { font-size: clamp(1.75rem, 4vw, 2.75rem) !important; }
+.display-5 { font-size: clamp(1.4rem, 3.5vw, 2rem) !important; }
+.display-6 { font-size: clamp(1.2rem, 3vw, 1.5rem) !important; }
+
+/* Mobile Navigation Bar Improvements */
+@media (max-width: 991.98px) {
+  .luxury-navbar {
+    padding: 0.6rem 0.5rem;
+    background: rgba(255, 249, 245, 0.95) !important;
+  }
+  .navbar-collapse {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 122, 156, 0.2);
+  }
+  .btn-audio-pill {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Tablet & Mobile Card Fit & Image Visibility */
+@media (max-width: 767.98px) {
+  .dashboard-page {
+    padding-top: 4rem !important;
+  }
+  .greeting-pill span {
+    font-size: 0.75rem;
+  }
+  .age-live-badge {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 1rem !important;
+    width: 100%;
+    justify-content: center;
+  }
+  .baby-quick-card {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Polaroid Frame Mobile Fit & High Image Visibility */
+  .polaroid-frame {
+    max-width: 300px !important;
+    margin: 0 auto;
+    padding: 10px 10px 16px 10px;
+  }
+  .polaroid-img {
+    height: 200px !important;
+    object-position: center 20%;
+  }
+
+  .chapter-card .polaroid-img {
+    height: 160px !important;
+    object-position: center 20%;
+  }
+
+  .chapter-hero-img-wrapper, .chapter-hero-img {
+    min-height: 260px !important;
+    max-height: 320px !important;
+  }
+  
+  /* Timeline Horizontal Scroll Touch */
+  .timeline-horizontal-scroll {
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+  }
+  .timeline-node-card {
+    min-width: 140px !important;
+    padding: 0.85rem !important;
+  }
+  .node-icon-circle {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Intro Screens Fit */
+  .family-photo-frame {
+    max-width: 300px !important;
+  }
+  .glowing-moon {
+    width: 70px;
+    height: 70px;
+    font-size: 2.2rem;
+  }
+  .intro-card-glass {
+    padding: 1.2rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .brand-title {
+    font-size: 1.1rem;
+  }
+  .btn-luxury-primary {
+    width: 100%;
+  }
+  .chapter-nav-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .chapter-nav-bar a, .chapter-nav-bar div {
+    width: 100%;
+    text-align: center;
+  }
+}
