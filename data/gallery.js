@@ -4,7 +4,7 @@ const gallery = [
     month: 1,
     title: "1 Month Newborn Dream",
     image: "/images/momma-pappa.jpeg",
-    caption: "Wrapped in cashmere with Mommy Akanksha and Daddy Mohit",
+    caption: "Wrapped in cashmere with Mumma Akanksha and Papa Mohit",
     tags: ["Newborn", "Family", "Love"]
   },
   {
@@ -25,7 +25,7 @@ const gallery = [
     month: 6,
     title: "Half Birthday Royal Celebration",
     image: "/images/memory-tree.png",
-    caption: "180 days of pure happiness with Mommy & Daddy",
+    caption: "180 days of pure happiness with Mumma & Papa",
     tags: ["Half Birthday", "Celebration", "Royalty"]
   }
 ];

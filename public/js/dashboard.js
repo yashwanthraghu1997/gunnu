@@ -146,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.json())
     .then(data => {
       console.log(`✨ Saved photo for Month ${monthId}:`, data);
+      alert(`✨ Month ${monthId} photo updated successfully!`);
     })
     .catch(err => console.error("Error saving photo to server:", err));
   }

@@ -1,0 +1,104 @@
+/* album-mobile.css - Mobile Responsive Album Stylesheet */
+
+@media (max-width: 767.98px) {
+  .album-page-wrapper {
+    padding-top: 66px;
+  }
+
+  .album-header-bar {
+    top: 60px;
+    padding: 12px 16px !important;
+  }
+
+  .album-main-title {
+    font-size: 1.2rem;
+  }
+
+  .album-subtitle {
+    font-size: 0.72rem;
+  }
+
+  .btn-album-action {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  /* Mobile Single Page Card */
+  .mobile-page-card {
+    width: 100%;
+    max-width: 440px;
+    min-height: 480px;
+    background: var(--album-paper-base);
+    border: 2px solid var(--album-brass-gold);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.4),
+      inset 0 0 20px rgba(196, 154, 108, 0.15);
+  }
+
+  /* Swipe Feedback States */
+  .mobile-page-card.swiping-left {
+    transform: translateX(-40px) rotate(-3deg);
+  }
+
+  .mobile-page-card.swiping-right {
+    transform: translateX(40px) rotate(3deg);
+  }
+
+  .photo-album-img {
+    height: 240px;
+  }
+
+  .photo-album-caption {
+    font-size: 1.25rem;
+  }
+
+  .text-page-body {
+    font-size: 1.3rem;
+  }
+
+  .name-big-display {
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+  }
+
+  .mobile-drag-hint {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .mobile-nav-controls {
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Extra small devices (320px - 375px) */
+@media (max-width: 375px) {
+  .album-main-title {
+    font-size: 1.05rem;
+  }
+
+  .photo-album-img {
+    height: 200px;
+  }
+
+  .mobile-page-card {
+    min-height: 440px;
+  }
+
+  .btn-album-action {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+}

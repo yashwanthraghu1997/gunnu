@@ -1,0 +1,35 @@
+[
+  {
+    "id": "page_2",
+    "type": "text",
+    "title": "First Moments Together",
+    "content": "Today you smiled for the first time. Mumma and Papa will never forget this moment. You brought so much sunshine into our hearts, little angel. ❤️",
+    "date": "28 July 2026"
+  },
+  {
+    "id": "page_1",
+    "type": "photo",
+    "title": "Welcome to Gunnu's Sweet World",
+    "image": "https://lh3.googleusercontent.com/d/1s9c6ZE3v_b_2vGO9y2lJD2G24ZvzYkzM",
+    "caption": "Wrapped in warmth and endless love with Mumma & Papa",
+    "date": "28 July 2026"
+  },
+  {
+    "id": "page_4",
+    "type": "name_reveal",
+    "title": "A Sacred Identity",
+    "pretitle": "I received my name.",
+    "subtitle": "Mumma & Papa chose it with so much love.",
+    "name": "Arika",
+    "tagline": "My name. My first little identity.",
+    "date": "7 August 2026"
+  },
+  {
+    "id": "page_3",
+    "type": "photo",
+    "title": "✨ My First Little Identity",
+    "image": "https://lh3.googleusercontent.com/d/1CkEiCJmAVZIohf55eNRVux8Fs8ZGn1Rx",
+    "caption": "Tiny fingers, cute little coos, and peaceful sleep",
+    "date": "7 August 2026"
+  }
+]

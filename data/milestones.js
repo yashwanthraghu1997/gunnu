@@ -5,12 +5,12 @@ const milestones = [
     icon: "fa-solid fa-heart",
     color: "#FF7A9C",
     items: [
-      { month: 1, title: "Calms to Familiar Voices", description: "Recognizes Mommy's & Daddy's voice and calms down when held." },
+      { month: 1, title: "Calms to Familiar Voices", description: "Recognizes Mumma's & Papa's voice and calms down when held." },
       { month: 2, title: "First Social Smile", description: "Smiles intentionally at parents in response to smiles and playful talk." },
       { month: 4, title: "Loves to Play & Laughs", description: "Belly laughs out loud and cries when play stops." },
       { month: 6, title: "Mirror Play Discovery", description: "Enjoys looking at own reflection in mirror and playing peek-a-boo." },
       { month: 9, title: "Stranger & Separation Anxiety", description: "Shows preference for primary caregivers and waves 'bye-bye'." },
-      { month: 12, title: "Shows Affection & Hugs", description: "Gives spontaneous hugs, kisses, and smiles to Mommy and Daddy." }
+      { month: 12, title: "Shows Affection & Hugs", description: "Gives spontaneous hugs, kisses, and smiles to Mumma and Papa." }
     ]
   },
   {

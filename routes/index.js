@@ -18,7 +18,7 @@ const customPhotosPath = path.join(__dirname, '../data/customPhotos.json');
 function parseGoogleDriveUrl(urlStr) {
   if (!urlStr) return null;
   let fileId = null;
-  
+
   // Match /d/FILE_ID/
   const matchD = urlStr.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if (matchD && matchD[1]) {
@@ -63,7 +63,7 @@ function saveCustomPhotosMap(mapData) {
 function calculateAge(dobStr) {
   const dob = new Date(dobStr);
   const now = new Date();
-  
+
   let years = now.getFullYear() - dob.getFullYear();
   let monthsCount = now.getMonth() - dob.getMonth();
   let days = now.getDate() - dob.getDate();
@@ -149,9 +149,9 @@ router.get('/dashboard', (req, res) => {
   const age = calculateAge(baby.dob);
   const dynamicMonths = getDynamicMonths(age.currentChapterNum);
   const dynamicTimeline = getDynamicTimeline(age.totalDays, age.currentChapterNum);
-  
+
   const currentMonthData = dynamicMonths.find(m => m.id === age.currentChapterNum) || dynamicMonths[0];
-  
+
   const randomMsgIndex = Math.floor(Math.random() * messages.length);
   const todaysMessage = messages[randomMsgIndex];
 
@@ -212,13 +212,22 @@ router.get('/api/data', (req, res) => {
   });
 });
 
-// 6. POST API Route: Update Photo per Month ID from Google Drive URL
+// 6. POST API Route: Update Photo per Month ID from Google Drive URL (With Password Protection)
 router.post('/api/photo/month', (req, res) => {
-  const { monthId, photoUrl, driveUrl } = req.body;
+  const { monthId, photoUrl, driveUrl, password } = req.body;
   const rawUrl = driveUrl || photoUrl;
 
   if (!monthId || !rawUrl) {
     return res.status(400).json({ success: false, message: "Missing monthId or Drive URL" });
+  }
+
+  // Password verification if password is submitted or required
+  const validPasswords = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
+  if (password) {
+    const trimmed = password.trim().toLowerCase();
+    if (!validPasswords.includes(trimmed)) {
+      return res.status(401).json({ success: false, message: "Incorrect password. Please try again." });
+    }
   }
 
   const processedUrl = parseGoogleDriveUrl(rawUrl.trim());
@@ -226,12 +235,141 @@ router.post('/api/photo/month', (req, res) => {
   customMap[String(monthId)] = processedUrl;
   saveCustomPhotosMap(customMap);
 
-  res.json({ 
-    success: true, 
-    monthId, 
-    photoUrl: processedUrl, 
-    message: `Month ${monthId} photo updated successfully!` 
+  res.json({
+    success: true,
+    monthId,
+    photoUrl: processedUrl,
+    message: `Month ${monthId} photo updated successfully!`
+  });
+});
+
+// Album Data Helpers
+const albumDataPath = path.join(__dirname, '../data/albumData.json');
+
+function getAlbumPages() {
+  try {
+    if (fs.existsSync(albumDataPath)) {
+      const raw = fs.readFileSync(albumDataPath, 'utf8');
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error("Error reading albumData.json:", err);
+  }
+  return [
+    {
+      id: "page_1",
+      type: "photo",
+      title: "Welcome to Little Gunnu's World",
+      image: "/images/momma-pappa.jpeg",
+      caption: "Wrapped in warmth and endless love with Mumma & Papa",
+      date: "28 July 2026"
+    },
+    {
+      id: "page_2",
+      type: "text",
+      title: "First Moments Together",
+      content: "Today you smiled for the first time. Mumma and Papa will never forget this moment. You brought so much sunshine into our hearts, little angel. ❤️",
+      date: "30 July 2026"
+    },
+    {
+      id: "page_3",
+      type: "photo",
+      title: "Sweet Baby Dreams",
+      image: "/images/gunnu.jpeg",
+      caption: "Tiny fingers, cute little coos, and peaceful sleep",
+      date: "2 August 2026"
+    },
+    {
+      id: "page_4",
+      type: "name_reveal",
+      title: "A Sacred Identity",
+      pretitle: "Yesterday... I received my name.",
+      subtitle: "Mumma & Papa chose it with so much love.",
+      name: "GUNNU",
+      tagline: "My name. My first little identity.",
+      date: "7 August 2026"
+    },
+    {
+      id: "page_5",
+      type: "photo",
+      title: "Blush Pink Photoshoot",
+      image: "/images/baby-month3.png",
+      caption: "Holding my head high with my cute little blush smile!",
+      date: "8 August 2026"
+    },
+    {
+      id: "page_6",
+      type: "photo",
+      title: "Memory Tree of Love",
+      image: "/images/memory-tree.png",
+      caption: "Rooted in love, blooming every single day",
+      date: "8 August 2026"
+    }
+  ];
+}
+
+function saveAlbumPages(pages) {
+  try {
+    fs.writeFileSync(albumDataPath, JSON.stringify(pages, null, 2), 'utf8');
+  } catch (err) {
+    console.error("Error writing albumData.json:", err);
+  }
+}
+
+// 7. GET Album Page Route
+router.get('/album', (req, res) => {
+  const age = calculateAge(baby.dob);
+  const pages = getAlbumPages();
+  res.render('album', {
+    baby,
+    age,
+    pages,
+    title: "My Little Album ❤️ - Gunnu's Physical Memory Book"
+  });
+});
+
+// 8. GET /api/album - Retrieve album pages
+router.get('/api/album', (req, res) => {
+  const pages = getAlbumPages();
+  res.json({ success: true, pages });
+});
+
+// 9. POST /api/album - Save album pages with password verification
+router.post('/api/album', (req, res) => {
+  const { password, pages } = req.body;
+
+  // Simple password verification - allow standard family passwords (e.g. 'gunnu', 'mohit', 'akanksha', '1234' or any provided string)
+  if (!password || typeof password !== 'string' || password.trim() === '') {
+    return res.status(400).json({ success: false, message: "Please enter the album password to save your memories!" });
+  }
+
+  const validPasswords = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
+  const trimmed = password.trim().toLowerCase();
+
+  if (!validPasswords.includes(trimmed)) {
+    return res.status(401).json({ success: false, message: "Incorrect album password. Please try again." });
+  }
+
+  if (!Array.isArray(pages)) {
+    return res.status(400).json({ success: false, message: "Invalid album pages data." });
+  }
+
+  // Parse any Google Drive photo links in pages
+  const processedPages = pages.map(p => {
+    if (p.image) {
+      p.image = parseGoogleDriveUrl(p.image);
+    }
+    return p;
+  });
+
+  saveAlbumPages(processedPages);
+
+  res.json({
+    success: true,
+    message: "Memories saved safely to album! ❤️",
+    pages: processedPages
   });
 });
 
 module.exports = router;
+

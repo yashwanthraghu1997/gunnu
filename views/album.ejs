@@ -1,0 +1,466 @@
+<%- include('partials/header') %>
+  <%- include('partials/navbar') %>
+
+    <!-- Dedicated Album Stylesheets -->
+    <link rel="stylesheet" href="/css/album.css">
+    <link rel="stylesheet" href="/css/album-mobile.css">
+
+    <!-- Google Fonts: Handwritten Fonts for Story Pages -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Dancing+Script:wght@600;700&family=Sacramento&display=swap"
+      rel="stylesheet">
+
+    <main class="album-page-wrapper">
+      <!-- Top Luxury Album Control Bar -->
+      <header class="album-header-bar py-3 px-4 shadow-sm">
+        <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <!-- Title & Branding -->
+          <div class="d-flex align-items-center gap-3">
+            <div class="album-badge-icon shadow-sm">
+              <i class="fa-solid fa-book-bookmark text-danger"></i>
+            </div>
+            <div>
+              <h1 class="album-main-title m-0">My Little Album <span class="heart-pulse">❤️</span></h1>
+              <p class="album-subtitle m-0 text-muted small">Private Digital Baby Memory Scrapbook</p>
+            </div>
+          </div>
+
+          <!-- Live Unsaved Changes Status Badge -->
+          <div id="unsavedBadge"
+            class="badge rounded-pill bg-warning-subtle text-dark border border-warning px-3 py-2 d-none align-items-center gap-2">
+            <i class="fa-solid fa-circle-dot text-danger animate-pulse"></i>
+            <span>Unsaved changes</span>
+          </div>
+
+          <!-- Action Controls -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button id="openAddModalBtn" class="btn btn-album-action btn-add-photo">
+              <i class="fa-solid fa-plus me-1"></i> Add Photos
+            </button>
+
+            <button id="openManageModalBtn" class="btn btn-album-action btn-manage-album">
+              <i class="fa-solid fa-arrows-up-down-left-right me-1"></i> Manage Album
+            </button>
+
+            <button id="openSaveModalBtn" class="btn btn-album-action btn-save-album shadow-sm">
+              <i class="fa-solid fa-floppy-disk me-1"></i> Save Album
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Initial Server Seed Data injection (immune to code auto-formatters) -->
+      <script id="albumSeedData" type="application/json"><%- JSON.stringify(pages) %></script>
+      <script>
+        try {
+          window.INITIAL_ALBUM_PAGES = JSON.parse(document.getElementById('albumSeedData').textContent);
+        } catch (e) {
+          window.INITIAL_ALBUM_PAGES = [];
+        }
+      </script>
+
+      <div class="container-fluid py-4 px-2 px-md-4">
+        <!-- DESKTOP ALBUM VIEW (Visible on tablet & desktop screens) -->
+        <section class="desktop-album-section d-none d-md-block position-relative">
+          <div class="album-leather-frame mx-auto shadow-2xl position-relative">
+            <!-- Leather Corner Tabs -->
+            <div class="brass-corner corner-tl"></div>
+            <div class="brass-corner corner-tr"></div>
+            <div class="brass-corner corner-bl"></div>
+            <div class="brass-corner corner-br"></div>
+
+            <!-- Book Stage (3D Flip Container) -->
+            <div class="album-book-stage" id="albumBookStage">
+              <div class="album-book" id="albumBook">
+                <!-- Left Fixed Page -->
+                <div class="album-page album-page-left" id="leftPage">
+                  <div class="page-inner-paper" id="leftPageContent">
+                    <!-- Rendered dynamically by album.js -->
+                  </div>
+                  <div class="page-number-footer" id="leftPageNum">Page 1</div>
+                </div>
+
+                <!-- Central Spine Stitching & Gutter Shadow -->
+                <div class="album-spine-gutter">
+                  <div class="spine-thread"></div>
+                  <div class="spine-thread"></div>
+                  <div class="spine-thread"></div>
+                </div>
+
+                <!-- Right Fixed Page -->
+                <div class="album-page album-page-right" id="rightPage">
+                  <div class="page-inner-paper" id="rightPageContent">
+                    <!-- Rendered dynamically by album.js -->
+                  </div>
+                  <div class="page-number-footer" id="rightPageNum">Page 2</div>
+                </div>
+
+                <!-- 3D Turning Leaf (For Page Turn Animation) -->
+                <div class="turning-leaf d-none" id="turningLeaf">
+                  <div class="leaf-face leaf-front" id="leafFront">
+                    <div class="page-inner-paper" id="leafFrontContent"></div>
+                  </div>
+                  <div class="leaf-face leaf-back" id="leafBack">
+                    <div class="page-inner-paper" id="leafBackContent"></div>
+                  </div>
+                </div>
+
+                <!-- Shadow Layers for 3D realism -->
+                <div class="flip-shadow-overlay shadow-left" id="shadowLeft"></div>
+                <div class="flip-shadow-overlay shadow-right" id="shadowRight"></div>
+              </div>
+            </div>
+
+            <!-- Desktop Flap Controls -->
+            <button id="prevPageBtn" class="album-nav-arrow arrow-left" title="Previous Page (Left Arrow)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button id="nextPageBtn" class="album-nav-arrow arrow-right" title="Next Page (Right Arrow)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Page Counter Indicator -->
+          <div class="text-center mt-3">
+            <span class="album-page-counter-badge shadow-sm" id="desktopCounterBadge">Pages 1 - 2 of <%= pages.length %>
+            </span>
+          </div>
+        </section>
+
+        <!-- MOBILE ALBUM VIEW (Visible on screens < 768px) -->
+        <section class="mobile-album-section d-block d-md-none position-relative py-2">
+          <div class="mobile-album-wrapper mx-auto">
+            <!-- Touch Swipe Visual Card -->
+            <div class="mobile-page-card shadow-lg" id="mobilePageCard">
+              <div class="page-inner-paper p-3" id="mobilePageContent">
+                <!-- Rendered dynamically by album-mobile.js -->
+              </div>
+              <div class="mobile-drag-hint">
+                <span class="small text-muted"><i class="fa-solid fa-hand-pointer me-1"></i> Swipe left or right to turn
+                  page</span>
+              </div>
+            </div>
+
+            <!-- Mobile Controls Bar -->
+            <div
+              class="mobile-nav-controls d-flex align-items-center justify-content-between mt-3 px-3 py-2 bg-white rounded-pill shadow-sm">
+              <button id="mobilePrevBtn" class="btn btn-sm btn-outline-secondary rounded-circle shadow-none">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+
+              <div id="mobilePageCounter" class="fw-bold text-dark small">
+                1 / <%= pages.length %>
+              </div>
+
+              <button id="mobileNextBtn" class="btn btn-sm btn-outline-secondary rounded-circle shadow-none">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOTTOM THUMBNAIL STRIP (Shared Desktop & Mobile) -->
+        <section class="thumbnail-strip-section mt-4 pt-2">
+          <div class="container">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="small fw-semibold text-muted text-uppercase tracking-wider">
+                <i class="fa-solid fa-images me-1"></i> Album Thumbnails
+              </span>
+              <span class="small text-muted">Click to jump directly to page</span>
+            </div>
+
+            <div class="thumbnail-scroll-container py-2" id="thumbnailStrip">
+              <!-- Thumbnails rendered dynamically by album.js -->
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ==================================================== -->
+    <!-- MODAL 1: ADD CONTENT MODAL                          -->
+    <!-- ==================================================== -->
+    <div class="modal fade" id="addContentModal" tabindex="-1" aria-labelledby="addContentModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-2xl rounded-4">
+          <div class="modal-header bg-light border-0 py-3 px-4 rounded-top-4">
+            <h5 class="modal-title font-playfair fw-bold text-dark d-flex align-items-center gap-2"
+              id="addContentModalLabel">
+              <i class="fa-solid fa-heart-circle-plus text-danger"></i> Add New Memory to Album
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Content Type Tabs -->
+            <ul class="nav nav-pills custom-album-pills mb-4 gap-2" id="addContentTypeTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tabPhotoBtn" data-bs-toggle="tab" data-bs-target="#tabPhoto"
+                  type="button" role="tab">
+                  <i class="fa-solid fa-image me-1"></i> Upload / Link Photo
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tabTextBtn" data-bs-toggle="tab" data-bs-target="#tabText" type="button"
+                  role="tab">
+                  <i class="fa-solid fa-pen-nib me-1"></i> Add Text Page
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tabNameBtn" data-bs-toggle="tab" data-bs-target="#tabName" type="button"
+                  role="tab">
+                  <i class="fa-solid fa-crown me-1"></i> Name Reveal Page
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="addContentTypeContent">
+              <!-- 1. PHOTO PAGE FORM -->
+              <div class="tab-pane fade show active" id="tabPhoto" role="tabpanel">
+                <form id="addPhotoForm">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Photo Title / Heading</label>
+                    <input type="text" class="form-control rounded-3" id="photoTitleInput"
+                      placeholder="e.g. Sweet Baby Smiles" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Google Drive Share Link or Image URL</label>
+                    <input type="url" class="form-control rounded-3" id="photoUrlInput"
+                      placeholder="https://drive.google.com/file/d/... or /images/..." required>
+                    <div class="form-text text-muted">Paste your Google Drive link or direct photo URL.</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Caption</label>
+                    <textarea class="form-control rounded-3" id="photoCaptionInput" rows="2"
+                      placeholder="e.g. Mommy's favorite moment ❤️"></textarea>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Memory Date</label>
+                    <input type="text" class="form-control rounded-3" id="photoDateInput"
+                      value="<%= new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>">
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                      data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Add Photo Page</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- 2. TEXT PAGE FORM -->
+              <div class="tab-pane fade" id="tabText" role="tabpanel">
+                <form id="addTextForm">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Page Title</label>
+                    <input type="text" class="form-control rounded-3" id="textTitleInput"
+                      placeholder="e.g. A Special Note from Mumma & Papa" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Handwritten Memory Text</label>
+                    <textarea class="form-control rounded-3 font-handwritten fs-5" id="textContentInput" rows="5"
+                      placeholder="Today you smiled for the first time. Mumma and Papa will never forget this moment... ❤️"
+                      required></textarea>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Date</label>
+                    <input type="text" class="form-control rounded-3" id="textDateInput"
+                      value="<%= new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>">
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                      data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Add Text Page</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- 3. NAME REVEAL FORM -->
+              <div class="tab-pane fade" id="tabName" role="tabpanel">
+                <form id="addNameForm">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Intro Line</label>
+                    <input type="text" class="form-control rounded-3" id="namePretitleInput"
+                      value="Yesterday... I received my name.">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Subtitle Line</label>
+                    <input type="text" class="form-control rounded-3" id="nameSubtitleInput"
+                      value="Mumma & Papa chose it with so much love.">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold text-danger">Baby Name (LARGE)</label>
+                    <input type="text" class="form-control rounded-3 form-control-lg fw-bold text-uppercase"
+                      id="nameBabyInput" value="<%= baby.name %>" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Tagline</label>
+                    <input type="text" class="form-control rounded-3" id="nameTaglineInput"
+                      value="My name. My first little identity.">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Reveal Date</label>
+                    <input type="text" class="form-control rounded-3" id="nameDateInput"
+                      value="<%= new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>">
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                      data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Create Name Reveal Page</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- MODAL 2: MANAGE & REORDER ALBUM MODAL                -->
+    <!-- ==================================================== -->
+    <div class="modal fade" id="manageAlbumModal" tabindex="-1" aria-labelledby="manageAlbumModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-2xl rounded-4">
+          <div class="modal-header bg-light border-0 py-3 px-4 rounded-top-4">
+            <h5 class="modal-title font-playfair fw-bold text-dark d-flex align-items-center gap-2"
+              id="manageAlbumModalLabel">
+              <i class="fa-solid fa-arrows-up-down-left-right text-primary"></i> Manage & Reorder Pages
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <p class="text-muted small mb-3">
+              <i class="fa-solid fa-info-circle me-1"></i> Drag and drop the handles <i
+                class="fa-solid fa-grip-vertical text-secondary"></i> to reorder your album pages. Click <i
+                class="fa-solid fa-trash text-danger"></i> to remove a page.
+            </p>
+
+            <ul class="list-group list-group-flush border rounded-3 overflow-hidden" id="reorderPageList">
+              <!-- Rendered dynamically by album.js -->
+            </ul>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <span class="small text-muted" id="reorderTotalCount">0 total pages</span>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- MODAL 3: EDIT PAGE MODAL                             -->
+    <!-- ==================================================== -->
+    <div class="modal fade" id="editPageModal" tabindex="-1" aria-labelledby="editPageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-2xl rounded-4">
+          <div class="modal-header bg-light border-0 py-3 px-4 rounded-top-4">
+            <h5 class="modal-title font-playfair fw-bold text-dark" id="editPageModalLabel">
+              <i class="fa-solid fa-pen text-warning me-2"></i> Edit Page Details
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="editPageForm">
+              <input type="hidden" id="editPageIndex">
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Title</label>
+                <input type="text" class="form-control rounded-3" id="editTitleInput" required>
+              </div>
+
+              <div class="mb-3" id="editImageContainer">
+                <label class="form-label fw-semibold">Image URL / Drive Link</label>
+                <input type="url" class="form-control rounded-3" id="editImageInput">
+              </div>
+
+              <div class="mb-3" id="editCaptionContainer">
+                <label class="form-label fw-semibold" id="editCaptionLabel">Caption / Content</label>
+                <textarea class="form-control rounded-3" id="editCaptionInput" rows="4"></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Date</label>
+                <input type="text" class="form-control rounded-3" id="editDateInput">
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mt-4">
+                <button type="button" class="btn btn-outline-danger rounded-pill px-3" id="deleteFromEditModalBtn">
+                  <i class="fa-solid fa-trash me-1"></i> Delete Page
+                </button>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 fw-semibold">Save
+                    Changes</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- MODAL 4: SAVE ALBUM & PASSWORD VERIFICATION MODAL    -->
+    <!-- ==================================================== -->
+    <div class="modal fade" id="savePasswordModal" tabindex="-1" aria-labelledby="savePasswordModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-2xl rounded-4">
+          <div class="modal-header bg-danger text-white border-0 py-3 px-4 rounded-top-4">
+            <h5 class="modal-title font-playfair fw-bold d-flex align-items-center gap-2" id="savePasswordModalLabel">
+              <i class="fa-solid fa-heart"></i> Save Your Memories ❤️
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4 text-center">
+            <div class="mb-3">
+              <div class="save-lock-avatar mx-auto mb-3 shadow-sm">
+                <i class="fa-solid fa-lock text-danger fs-2"></i>
+              </div>
+              <h6 class="fw-bold text-dark">Password Verification Required</h6>
+              <p class="text-muted small">Please enter your album password to save all changes safely to the server.</p>
+            </div>
+
+            <form id="savePasswordForm">
+              <div class="mb-4">
+                <input type="password" class="form-control form-control-lg text-center rounded-pill border-2"
+                  id="albumPasswordInput" placeholder="Enter album password" required autofocus>
+                <div class="form-text text-muted">Family password (e.g. <code>gunnu</code>)</div>
+              </div>
+
+              <div id="saveFeedbackAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3"></div>
+
+              <div class="d-flex justify-content-center gap-3">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" id="confirmSaveBtn" class="btn btn-danger rounded-pill px-5 fw-bold shadow-sm">
+                  <i class="fa-solid fa-floppy-disk me-1"></i> Verify & Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Application Scripts -->
+    <script src="/js/album.js"></script>
+    <script src="/js/album-mobile.js"></script>
+
+    <%- include('partials/footer') %>
