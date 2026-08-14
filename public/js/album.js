@@ -3,6 +3,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   // State variables
   let pages = window.INITIAL_ALBUM_PAGES || [];
+  try {
+    const savedLocal = localStorage.getItem('gunnusVoiceAlbumPages');
+    if (savedLocal) {
+      const parsed = JSON.parse(savedLocal);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        pages = parsed;
+      }
+    }
+  } catch (e) {}
+
   let currentPairIndex = 0; // Index of current left page on desktop (0, 2, 4...)
   let isUnsaved = false;
   let isFlipping = false;
@@ -21,9 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const thumbnailStrip = document.getElementById('thumbnailStrip');
   const unsavedBadge = document.getElementById('unsavedBadge');
 
+  // Helper: Save pages to localStorage for Vercel persistence
+  function saveToLocalStorage() {
+    try {
+      localStorage.setItem('gunnusVoiceAlbumPages', JSON.stringify(pages));
+    } catch (e) {}
+  }
+
   // Helper: Mark unsaved changes
   function setUnsavedState(state = true) {
     isUnsaved = state;
+    if (isUnsaved) {
+      saveToLocalStorage();
+    }
     if (unsavedBadge) {
       if (isUnsaved) {
         unsavedBadge.classList.remove('d-none');
@@ -83,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const editBtnHTML = `
       <div class="page-action-triggers">
-        <button class="page-edit-trigger" onclick="openEditModal(${pageIndex})" title="Edit Page">
+        <button class="page-edit-trigger" onclick="event.stopPropagation(); openEditModal(${pageIndex})" title="Edit Page">
           <i class="fa-solid fa-pencil"></i>
         </button>
-        <button class="page-delete-trigger" onclick="deleteAlbumPage(${pageIndex})" title="Delete Page">
+        <button class="page-delete-trigger" onclick="event.stopPropagation(); deleteAlbumPage(${pageIndex})" title="Delete Page">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -332,6 +352,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // ADD FORMS HANDLERS
   // ==========================================
+  let addPhotoPendingDataUrl = "";
+  const photoFileInput = document.getElementById('photoFileInput');
+  if (photoFileInput) {
+    photoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          addPhotoPendingDataUrl = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   const addPhotoForm = document.getElementById('addPhotoForm');
   if (addPhotoForm) {
     addPhotoForm.addEventListener('submit', (e) => {
@@ -341,10 +376,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const caption = document.getElementById('photoCaptionInput').value.trim();
       const date = document.getElementById('photoDateInput').value.trim();
 
-      const processedUrl = convertGoogleDriveUrl(rawUrl);
+      let finalImg = "";
+      if (addPhotoPendingDataUrl) {
+        finalImg = addPhotoPendingDataUrl;
+      } else if (rawUrl) {
+        finalImg = convertGoogleDriveUrl(rawUrl);
+      }
 
-      if (!processedUrl) {
-        alert("Please paste a valid Google Drive URL or Image Link!");
+      if (!finalImg) {
+        alert("Please select a photo file to upload or paste a valid image URL!");
         return;
       }
 
@@ -352,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         id: `page_${Date.now()}`,
         type: 'photo',
         title: title || 'Baby Memory',
-        image: processedUrl,
+        image: finalImg,
         caption: caption,
         date: date || new Date().toLocaleDateString('en-GB')
       };
@@ -368,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bootstrap.Modal.getInstance(modalEl).hide();
       }
       addPhotoForm.reset();
+      addPhotoPendingDataUrl = "";
     });
   }
 
@@ -454,17 +495,56 @@ document.addEventListener('DOMContentLoaded', () => {
       if (page.type === 'text') badge = `<span class="badge bg-success">Text</span>`;
       if (page.type === 'name_reveal') badge = `<span class="badge bg-danger">Name Reveal</span>`;
 
+      const isFirst = idx === 0;
+      const isLast = idx === pages.length - 1;
+
       li.innerHTML = `
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
           <i class="fa-solid fa-grip-vertical text-muted drag-handle me-1" style="cursor: grab;"></i>
           ${badge}
-          <strong class="small text-dark text-truncate" style="max-width: 280px;">${page.title || page.caption || 'Page'}</strong>
+          <strong class="small text-dark text-truncate" style="max-width: 180px;">${page.title || page.caption || 'Page'}</strong>
         </div>
 
-        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle border-0 delete-page-item-btn" draggable="false">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+        <div class="d-flex align-items-center gap-1">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle px-2 py-0 move-up-btn" ${isFirst ? 'disabled' : ''} title="Move Up">
+            <i class="fa-solid fa-arrow-up small"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle px-2 py-0 move-down-btn" ${isLast ? 'disabled' : ''} title="Move Down">
+            <i class="fa-solid fa-arrow-down small"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-danger rounded-circle border-0 delete-page-item-btn ms-1" draggable="false" title="Delete Page">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
       `;
+
+      // Move Up action
+      const moveUpBtn = li.querySelector('.move-up-btn');
+      if (moveUpBtn && !isFirst) {
+        moveUpBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const temp = pages[idx];
+          pages[idx] = pages[idx - 1];
+          pages[idx - 1] = temp;
+          setUnsavedState(true);
+          renderManagePageList();
+          window.updateDesktopView();
+        });
+      }
+
+      // Move Down action
+      const moveDownBtn = li.querySelector('.move-down-btn');
+      if (moveDownBtn && !isLast) {
+        moveDownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const temp = pages[idx];
+          pages[idx] = pages[idx + 1];
+          pages[idx + 1] = temp;
+          setUnsavedState(true);
+          renderManagePageList();
+          window.updateDesktopView();
+        });
+      }
 
       // Delete button inside manage item
       const delBtn = li.querySelector('.delete-page-item-btn');
@@ -526,9 +606,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // EDIT PAGE MODAL
   // ==========================================
+  let editPhotoPendingDataUrl = "";
+  const editFileInput = document.getElementById('editFileInput');
+  if (editFileInput) {
+    editFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          editPhotoPendingDataUrl = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   window.openEditModal = function (index) {
     const page = pages[index];
     if (!page) return;
+
+    editPhotoPendingDataUrl = "";
+    if (editFileInput) editFileInput.value = "";
 
     document.getElementById('editPageIndex').value = index;
     document.getElementById('editTitleInput').value = page.title || '';
@@ -584,7 +682,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (page.type === 'photo') {
         let rawUrl = document.getElementById('editImageInput').value.trim();
-        page.image = convertGoogleDriveUrl(rawUrl);
+        if (editPhotoPendingDataUrl) {
+          page.image = editPhotoPendingDataUrl;
+        } else if (rawUrl) {
+          page.image = convertGoogleDriveUrl(rawUrl);
+        }
         page.caption = document.getElementById('editCaptionInput').value.trim();
       } else if (page.type === 'text') {
         page.content = document.getElementById('editCaptionInput').value.trim();
@@ -632,6 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           if (data.success) {
+            saveToLocalStorage();
             setUnsavedState(false);
             sessionStorage.setItem('gunnusVoiceLastAlbumPage', currentPairIndex);
             const modalEl = document.getElementById('savePasswordModal');

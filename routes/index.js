@@ -225,22 +225,25 @@ router.get('/api/data', (req, res) => {
   });
 });
 
-// 6. POST API Route: Update Photo per Month ID from Google Drive URL (With Password Protection)
+// 6. POST API Route: Update Photo per Month ID from File or Google Drive URL (With Password Protection)
 router.post('/api/photo/month', (req, res) => {
   const { monthId, photoUrl, driveUrl, password } = req.body;
   const rawUrl = driveUrl || photoUrl;
 
   if (!monthId || !rawUrl) {
-    return res.status(400).json({ success: false, message: "Missing monthId or Drive URL" });
+    return res.status(400).json({ success: false, message: "Missing monthId or photo data." });
   }
 
-  // Password verification if password is submitted or required
+  // Password verification is strictly required
+  if (!password || typeof password !== 'string' || password.trim() === '') {
+    return res.status(401).json({ success: false, message: "Please enter your password to update the photo!" });
+  }
+
   const validPasswords = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
-  if (password) {
-    const trimmed = password.trim().toLowerCase();
-    if (!validPasswords.includes(trimmed)) {
-      return res.status(401).json({ success: false, message: "Incorrect password. Please try again." });
-    }
+  const trimmed = password.trim().toLowerCase();
+
+  if (!validPasswords.includes(trimmed)) {
+    return res.status(401).json({ success: false, message: "Incorrect password. Please try again." });
   }
 
   const processedUrl = parseGoogleDriveUrl(rawUrl.trim());

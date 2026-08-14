@@ -142,50 +142,63 @@ document.addEventListener('DOMContentLoaded', () => {
     return trimmed;
   };
 
-  // Helper: Save Month Photo to Server & LocalStorage
-  function saveMonthPhoto(monthId, driveUrl) {
-    const directUrl = window.convertGoogleDriveUrl(driveUrl);
-
-    // Backup to LocalStorage per month ID
-    localStorage.setItem(`gunnusVoiceMonthPhoto_${monthId}`, directUrl);
-
-    // Update main Scrapbook preview if matching active month
-    const previewImg = document.getElementById('scrapbookPhotoPreview');
-    if (previewImg) previewImg.src = directUrl;
-
-    // Update mini polaroid frame on bottom grid for that specific month ID
-    const cardImg = document.getElementById(`chapterCardImg-${monthId}`);
-    if (cardImg) cardImg.src = directUrl;
-
-    // Post to Server API for cross-device persistence
-    fetch('/api/photo/month', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ monthId, driveUrl: directUrl })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log(`✨ Saved photo for Month ${monthId}:`, data);
-      alert(`✨ Month ${monthId} photo updated successfully!`);
-    })
-    .catch(err => console.error("Error saving photo to server:", err));
-  }
-
-  // Google Drive Modal Trigger Handlers
+  // Modal input elements & state
   let selectedMonthForDrive = 1;
+  let pendingDataUrl = "";
+
   const driveModalInput = document.getElementById('driveModalInput');
+  const modalFileInput = document.getElementById('modalFileInput');
+  const modalPasswordInput = document.getElementById('modalPasswordInput');
+  const modalFeedbackAlert = document.getElementById('modalFeedbackAlert');
   const modalMonthNumDisplay = document.getElementById('modalMonthNumDisplay');
   const modalMonthNumSubtitle = document.getElementById('modalMonthNumSubtitle');
   const saveDriveModalBtn = document.getElementById('saveDriveModalBtn');
+  const modalImagePreviewContainer = document.getElementById('modalImagePreviewContainer');
+  const modalImagePreview = document.getElementById('modalImagePreview');
 
-  // Trigger modal when clicking any Drive button
+  // File upload input change listener (FileReader)
+  if (modalFileInput) {
+    modalFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          pendingDataUrl = event.target.result;
+          if (modalImagePreview) modalImagePreview.src = pendingDataUrl;
+          if (modalImagePreviewContainer) modalImagePreviewContainer.classList.remove('d-none');
+          if (modalFeedbackAlert) modalFeedbackAlert.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Drive link input listener for live preview
+  if (driveModalInput) {
+    driveModalInput.addEventListener('input', () => {
+      const val = driveModalInput.value.trim();
+      if (val) {
+        const parsed = window.convertGoogleDriveUrl(val);
+        if (modalImagePreview) modalImagePreview.src = parsed;
+        if (modalImagePreviewContainer) modalImagePreviewContainer.classList.remove('d-none');
+      }
+    });
+  }
+
+  // Trigger modal when clicking any open-drive-modal-btn button
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.open-drive-modal-btn');
     if (btn) {
       selectedMonthForDrive = btn.getAttribute('data-chapter') || 1;
+      pendingDataUrl = "";
+
       if (modalMonthNumDisplay) modalMonthNumDisplay.textContent = selectedMonthForDrive;
       if (modalMonthNumSubtitle) modalMonthNumSubtitle.textContent = selectedMonthForDrive;
       if (driveModalInput) driveModalInput.value = "";
+      if (modalFileInput) modalFileInput.value = "";
+      if (modalPasswordInput) modalPasswordInput.value = "";
+      if (modalFeedbackAlert) modalFeedbackAlert.classList.add('d-none');
+      if (modalImagePreviewContainer) modalImagePreviewContainer.classList.add('d-none');
 
       const driveModalElement = document.getElementById('googleDriveModal');
       if (driveModalElement && window.bootstrap) {
@@ -195,21 +208,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Save Modal Action Handler
   if (saveDriveModalBtn) {
     saveDriveModalBtn.addEventListener('click', () => {
+      const password = modalPasswordInput ? modalPasswordInput.value.trim() : "";
       const rawUrl = driveModalInput ? driveModalInput.value.trim() : "";
-      if (!rawUrl) {
-        alert("Please paste a valid Google Drive URL!");
+
+      if (!password) {
+        if (modalFeedbackAlert) {
+          modalFeedbackAlert.textContent = "Please enter your password to save changes!";
+          modalFeedbackAlert.classList.remove('d-none');
+        }
         return;
       }
 
-      saveMonthPhoto(selectedMonthForDrive, rawUrl);
-
-      const driveModalElement = document.getElementById('googleDriveModal');
-      if (driveModalElement && window.bootstrap) {
-        const modalInstance = bootstrap.Modal.getInstance(driveModalElement);
-        if (modalInstance) modalInstance.hide();
+      let finalPhotoUrl = "";
+      if (pendingDataUrl) {
+        finalPhotoUrl = pendingDataUrl;
+      } else if (rawUrl) {
+        finalPhotoUrl = window.convertGoogleDriveUrl(rawUrl);
       }
+
+      if (!finalPhotoUrl) {
+        if (modalFeedbackAlert) {
+          modalFeedbackAlert.textContent = "Please choose a photo file or enter a valid image URL!";
+          modalFeedbackAlert.classList.remove('d-none');
+        }
+        return;
+      }
+
+      saveDriveModalBtn.disabled = true;
+      saveDriveModalBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Saving...`;
+
+      // Save to Server
+      fetch('/api/photo/month', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ monthId: selectedMonthForDrive, photoUrl: finalPhotoUrl, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        saveDriveModalBtn.disabled = false;
+        saveDriveModalBtn.innerHTML = `Save & Render Photo`;
+
+        if (data.success) {
+          // Backup to LocalStorage
+          try {
+            localStorage.setItem(`gunnusVoiceMonthPhoto_${selectedMonthForDrive}`, data.photoUrl);
+          } catch(e) {}
+
+          // Update DOM Elements
+          const scrapbookPreview = document.getElementById('scrapbookPhotoPreview');
+          if (scrapbookPreview) scrapbookPreview.src = data.photoUrl;
+
+          const cardImg = document.getElementById(`chapterCardImg-${selectedMonthForDrive}`);
+          if (cardImg) cardImg.src = data.photoUrl;
+
+          const heroImg = document.getElementById('chapterHeroImg');
+          if (heroImg) heroImg.src = data.photoUrl;
+
+          const driveModalElement = document.getElementById('googleDriveModal');
+          if (driveModalElement && window.bootstrap) {
+            const modalInstance = bootstrap.Modal.getInstance(driveModalElement);
+            if (modalInstance) modalInstance.hide();
+          }
+
+          alert(`✨ Month ${selectedMonthForDrive} photo updated successfully!`);
+        } else {
+          if (modalFeedbackAlert) {
+            modalFeedbackAlert.textContent = data.message || "Failed to update photo.";
+            modalFeedbackAlert.classList.remove('d-none');
+          }
+        }
+      })
+      .catch(err => {
+        console.error("Error saving month photo:", err);
+        saveDriveModalBtn.disabled = false;
+        saveDriveModalBtn.innerHTML = `Save & Render Photo`;
+        if (modalFeedbackAlert) {
+          modalFeedbackAlert.textContent = "Server connection error. Please try again.";
+          modalFeedbackAlert.classList.remove('d-none');
+        }
+      });
     });
   }
 
