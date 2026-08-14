@@ -10,7 +10,7 @@
     "id": "page_1",
     "type": "photo",
     "title": "Welcome to Gunnu's Sweet World",
-    "image": "https://lh3.googleusercontent.com/d/1s9c6ZE3v_b_2vGO9y2lJD2G24ZvzYkzM",
+    "image": "https://lh3.googleusercontent.com/d/1cN8kP4g-xUsXQkdg3HINbpUhdz_H5kqh",
     "caption": "Wrapped in warmth and endless love with Mumma & Papa",
     "date": "28 July 2026"
   },
@@ -31,5 +31,21 @@
     "image": "https://lh3.googleusercontent.com/d/1CkEiCJmAVZIohf55eNRVux8Fs8ZGn1Rx",
     "caption": "Tiny fingers, cute little coos, and peaceful sleep",
     "date": "7 August 2026"
+  },
+  {
+    "id": "page_1786720274361",
+    "type": "photo",
+    "title": "My Custom Test Photo",
+    "image": "https://lh3.googleusercontent.com/d/1cN8kP4g-xUsXQkdg3HINbpUhdz_H5kqh",
+    "caption": "Special Moment with Gunnu",
+    "date": "14 August 2026"
+  },
+  {
+    "id": "page_1786721085502",
+    "type": "photo",
+    "title": "Final Test",
+    "image": "https://lh3.googleusercontent.com/d/1cN8kP4g-xUsXQkdg3HINbpUhdz_H5kqh",
+    "caption": "",
+    "date": "14 August 2026"
   }
 ]

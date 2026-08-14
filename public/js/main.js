@@ -111,6 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://${trimmed}`;
     }
 
+    return trimmed;
+  };
+
   // 4. Smart Multi-Level Image Error Fallback Handler for Google Drive Images
   window.handleImageError = function(imgEl) {
     if (!imgEl) return;
