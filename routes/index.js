@@ -16,16 +16,23 @@ const customPhotosPath = path.join(__dirname, '../data/customPhotos.json');
 
 // Helper function: Robust Google Drive URL Parser
 function parseGoogleDriveUrl(urlStr) {
-  if (!urlStr) return null;
+  if (!urlStr || typeof urlStr !== 'string') return '';
+  const trimmed = urlStr.trim();
+  if (!trimmed) return '';
+
+  if (trimmed.includes('lh3.googleusercontent.com/d/')) {
+    return trimmed;
+  }
+
   let fileId = null;
 
-  // Match /d/FILE_ID/
-  const matchD = urlStr.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  // Match /d/FILE_ID/ or /d/FILE_ID
+  const matchD = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if (matchD && matchD[1]) {
     fileId = matchD[1];
   } else {
     // Match id=FILE_ID
-    const matchId = urlStr.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const matchId = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
     if (matchId && matchId[1]) {
       fileId = matchId[1];
     }
@@ -34,7 +41,13 @@ function parseGoogleDriveUrl(urlStr) {
   if (fileId) {
     return `https://lh3.googleusercontent.com/d/${fileId}`;
   }
-  return urlStr; // Return unchanged if direct URL
+
+  // Prepend https:// if protocol is missing on standard URLs
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('/') && !trimmed.startsWith('data:')) {
+    return `https://${trimmed}`;
+  }
+
+  return trimmed;
 }
 
 // Helper function: Load custom photos map

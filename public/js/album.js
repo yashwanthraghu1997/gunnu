@@ -35,6 +35,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Google Drive URL Converter Helper (uses global or fallback)
+  function convertGoogleDriveUrl(urlStr) {
+    if (window.convertGoogleDriveUrl) {
+      return window.convertGoogleDriveUrl(urlStr);
+    }
+    if (!urlStr || typeof urlStr !== 'string') return '';
+    const trimmed = urlStr.trim();
+    if (!trimmed) return '';
+
+    if (trimmed.includes('lh3.googleusercontent.com/d/')) {
+      return trimmed;
+    }
+
+    let fileId = null;
+    const matchD = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (matchD && matchD[1]) {
+      fileId = matchD[1];
+    } else {
+      const matchId = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (matchId && matchId[1]) {
+        fileId = matchId[1];
+      }
+    }
+
+    if (fileId) {
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('/') && !trimmed.startsWith('data:')) {
+      return `https://${trimmed}`;
+    }
+
+    return trimmed;
+  }
+
   // Helper: Render single page HTML template
   window.renderPageHTML = function (page, pageIndex) {
     if (!page) {
@@ -136,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nextPageBtn) nextPageBtn.disabled = (currentPairIndex + 2 >= totalPages);
 
     renderThumbnails();
+
+    // Synchronize initial album pages array for mobile view
+    window.INITIAL_ALBUM_PAGES = pages;
 
     // Notify mobile controller if active
     if (window.updateMobileView) {
@@ -303,12 +341,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const caption = document.getElementById('photoCaptionInput').value.trim();
       const date = document.getElementById('photoDateInput').value.trim();
 
-      // Convert Google Drive URL if function exists
-      if (window.convertGoogleDriveUrl) {
-        rawUrl = window.convertGoogleDriveUrl(rawUrl);
-      }
+      const processedUrl = convertGoogleDriveUrl(rawUrl);
 
-      if (!rawUrl) {
+      if (!processedUrl) {
         alert("Please paste a valid Google Drive URL or Image Link!");
         return;
       }
@@ -317,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         id: `page_${Date.now()}`,
         type: 'photo',
         title: title || 'Baby Memory',
-        image: rawUrl,
+        image: processedUrl,
         caption: caption,
         date: date || new Date().toLocaleDateString('en-GB')
       };
@@ -547,8 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (page.type === 'photo') {
         let rawUrl = document.getElementById('editImageInput').value.trim();
-        if (window.convertGoogleDriveUrl) rawUrl = window.convertGoogleDriveUrl(rawUrl);
-        page.image = rawUrl;
+        page.image = convertGoogleDriveUrl(rawUrl);
         page.caption = document.getElementById('editCaptionInput').value.trim();
       } else if (page.type === 'text') {
         page.content = document.getElementById('editCaptionInput').value.trim();

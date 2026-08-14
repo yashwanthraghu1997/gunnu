@@ -14,18 +14,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Google Drive URL converter helper
   function convertGoogleDriveUrl(urlStr) {
-    if (!urlStr) return null;
+    if (window.convertGoogleDriveUrl) {
+      return window.convertGoogleDriveUrl(urlStr);
+    }
+    if (!urlStr || typeof urlStr !== 'string') return '';
+    const trimmed = urlStr.trim();
+    if (!trimmed) return '';
+
+    if (trimmed.includes('lh3.googleusercontent.com/d/')) {
+      return trimmed;
+    }
+
     let fileId = null;
-    const matchD = urlStr.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const matchD = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
     if (matchD && matchD[1]) {
       fileId = matchD[1];
     } else {
-      const matchId = urlStr.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      const matchId = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
       if (matchId && matchId[1]) {
         fileId = matchId[1];
       }
     }
-    return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : urlStr;
+
+    if (fileId) {
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('/') && !trimmed.startsWith('data:')) {
+      return `https://${trimmed}`;
+    }
+
+    return trimmed;
   }
 
   // Save Chapter Month Photo Helper
