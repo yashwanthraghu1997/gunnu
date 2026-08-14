@@ -106,9 +106,68 @@ function calculateAge(dobStr) {
   return { years, months: monthsCount, days, totalDays, currentChapterNum, daysUntilNextMonth };
 }
 
+// JSONBin.io Cloud Persistence Helpers
+const jsonbinConfigPath = path.join(__dirname, '../data/jsonbinConfig.json');
+function getJsonbinConfig() {
+  let secretKey = process.env.JSONBIN_SECRET_KEY || '';
+  let binPhotos = process.env.JSONBIN_BIN_PHOTOS || '';
+  let binAlbum = process.env.JSONBIN_BIN_ALBUM || '';
+
+  try {
+    if (fs.existsSync(jsonbinConfigPath)) {
+      const raw = fs.readFileSync(jsonbinConfigPath, 'utf8');
+      const cfg = JSON.parse(raw);
+      if (cfg.secretKey && !secretKey) secretKey = cfg.secretKey;
+      if (cfg.binPhotos && !binPhotos) binPhotos = cfg.binPhotos;
+      if (cfg.binAlbum && !binAlbum) binAlbum = cfg.binAlbum;
+    }
+  } catch(e) {}
+
+  return { secretKey, binPhotos, binAlbum };
+}
+
+async function loadCustomPhotosMapAsync() {
+  const cfg = getJsonbinConfig();
+  if (cfg.secretKey && cfg.binPhotos) {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binPhotos}/latest`, {
+        headers: { 'X-Master-Key': cfg.secretKey }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.record && typeof data.record === 'object') {
+          return data.record;
+        }
+      }
+    } catch (err) {
+      console.error("JSONBin photos load error:", err);
+    }
+  }
+  return getCustomPhotosMap();
+}
+
+async function saveCustomPhotosMapAsync(mapData) {
+  saveCustomPhotosMap(mapData);
+  const cfg = getJsonbinConfig();
+  if (cfg.secretKey && cfg.binPhotos) {
+    try {
+      await fetch(`https://api.jsonbin.io/v3/b/${cfg.binPhotos}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': cfg.secretKey
+        },
+        body: JSON.stringify(mapData)
+      });
+    } catch (err) {
+      console.error("JSONBin photos save error:", err);
+    }
+  }
+}
+
 // Age-Based Dynamic Month Status Generator with Month-Wise Custom Photo Merge
-function getDynamicMonths(currentChapterNum) {
-  const customMap = getCustomPhotosMap();
+async function getDynamicMonthsAsync(currentChapterNum) {
+  const customMap = await loadCustomPhotosMapAsync();
   return months.map(m => {
     let status = 'locked';
     if (m.id < currentChapterNum) {
@@ -158,9 +217,9 @@ router.get('/intro', (req, res) => {
 });
 
 // 3. Dashboard Route
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', async (req, res) => {
   const age = calculateAge(baby.dob);
-  const dynamicMonths = getDynamicMonths(age.currentChapterNum);
+  const dynamicMonths = await getDynamicMonthsAsync(age.currentChapterNum);
   const dynamicTimeline = getDynamicTimeline(age.totalDays, age.currentChapterNum);
 
   const currentMonthData = dynamicMonths.find(m => m.id === age.currentChapterNum) || dynamicMonths[0];
@@ -182,10 +241,10 @@ router.get('/dashboard', (req, res) => {
 });
 
 // 4. Chapter Detail Route
-router.get('/chapter/:id', (req, res) => {
+router.get('/chapter/:id', async (req, res) => {
   const age = calculateAge(baby.dob);
   const chapterId = parseInt(req.params.id, 10);
-  const dynamicMonths = getDynamicMonths(age.currentChapterNum);
+  const dynamicMonths = await getDynamicMonthsAsync(age.currentChapterNum);
   const chapter = dynamicMonths.find(m => m.id === chapterId);
 
   if (!chapter) {
@@ -209,9 +268,9 @@ router.get('/chapter/:id', (req, res) => {
 });
 
 // 5. Client API route
-router.get('/api/data', (req, res) => {
+router.get('/api/data', async (req, res) => {
   const age = calculateAge(baby.dob);
-  const dynamicMonths = getDynamicMonths(age.currentChapterNum);
+  const dynamicMonths = await getDynamicMonthsAsync(age.currentChapterNum);
   const dynamicTimeline = getDynamicTimeline(age.totalDays, age.currentChapterNum);
 
   res.json({
@@ -226,7 +285,7 @@ router.get('/api/data', (req, res) => {
 });
 
 // 6. POST API Route: Update Photo per Month ID from File or Google Drive URL (With Password Protection)
-router.post('/api/photo/month', (req, res) => {
+router.post('/api/photo/month', async (req, res) => {
   const { monthId, photoUrl, driveUrl, password } = req.body;
   const rawUrl = driveUrl || photoUrl;
 
@@ -247,9 +306,9 @@ router.post('/api/photo/month', (req, res) => {
   }
 
   const processedUrl = parseGoogleDriveUrl(rawUrl.trim());
-  const customMap = getCustomPhotosMap();
+  const customMap = await loadCustomPhotosMapAsync();
   customMap[String(monthId)] = processedUrl;
-  saveCustomPhotosMap(customMap);
+  await saveCustomPhotosMapAsync(customMap);
 
   res.json({
     success: true,
@@ -332,10 +391,49 @@ function saveAlbumPages(pages) {
   }
 }
 
+async function getAlbumPagesAsync() {
+  const cfg = getJsonbinConfig();
+  if (cfg.secretKey && cfg.binAlbum) {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binAlbum}/latest`, {
+        headers: { 'X-Master-Key': cfg.secretKey }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.record) && data.record.length > 0) {
+          return data.record;
+        }
+      }
+    } catch (err) {
+      console.error("JSONBin album load error:", err);
+    }
+  }
+  return getAlbumPages();
+}
+
+async function saveAlbumPagesAsync(pages) {
+  saveAlbumPages(pages);
+  const cfg = getJsonbinConfig();
+  if (cfg.secretKey && cfg.binAlbum) {
+    try {
+      await fetch(`https://api.jsonbin.io/v3/b/${cfg.binAlbum}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': cfg.secretKey
+        },
+        body: JSON.stringify(pages)
+      });
+    } catch (err) {
+      console.error("JSONBin album save error:", err);
+    }
+  }
+}
+
 // 7. GET Album Page Route
-router.get('/album', (req, res) => {
+router.get('/album', async (req, res) => {
   const age = calculateAge(baby.dob);
-  const pages = getAlbumPages();
+  const pages = await getAlbumPagesAsync();
   res.render('album', {
     baby,
     age,
@@ -345,16 +443,15 @@ router.get('/album', (req, res) => {
 });
 
 // 8. GET /api/album - Retrieve album pages
-router.get('/api/album', (req, res) => {
-  const pages = getAlbumPages();
+router.get('/api/album', async (req, res) => {
+  const pages = await getAlbumPagesAsync();
   res.json({ success: true, pages });
 });
 
 // 9. POST /api/album - Save album pages with password verification
-router.post('/api/album', (req, res) => {
+router.post('/api/album', async (req, res) => {
   const { password, pages } = req.body;
 
-  // Simple password verification - allow standard family passwords (e.g. 'gunnu', 'mohit', 'akanksha', '1234' or any provided string)
   if (!password || typeof password !== 'string' || password.trim() === '') {
     return res.status(400).json({ success: false, message: "Please enter the album password to save your memories!" });
   }
@@ -378,7 +475,7 @@ router.post('/api/album', (req, res) => {
     return p;
   });
 
-  saveAlbumPages(processedPages);
+  await saveAlbumPagesAsync(processedPages);
 
   res.json({
     success: true,
