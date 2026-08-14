@@ -226,12 +226,10 @@
                   </div>
 
                   <div class="mb-3">
-                    <label class="form-label fw-semibold"><i class="fa-solid fa-upload text-primary me-1"></i> Upload Photo File from Device</label>
-                    <input type="file" class="form-control rounded-3" id="photoFileInput" accept="image/*">
-                    <div class="form-text text-muted my-2">Or paste a Google Drive / Image URL:</div>
                     <label class="form-label fw-semibold"><i class="fa-brands fa-google-drive text-success me-1"></i> Google Drive Share Link or Image URL</label>
                     <input type="text" class="form-control rounded-3" id="photoUrlInput"
-                      placeholder="https://drive.google.com/file/d/... or /images/...">
+                      placeholder="https://drive.google.com/file/d/... or /images/..." required>
+                    <div class="form-text text-muted">Paste your Google Drive link or direct photo URL.</div>
                   </div>
 
                   <div class="mb-3">
@@ -388,9 +386,7 @@
               </div>
 
               <div class="mb-3" id="editImageContainer">
-                <label class="form-label fw-semibold"><i class="fa-solid fa-upload text-primary me-1"></i> Upload New Photo File</label>
-                <input type="file" class="form-control rounded-3 mb-2" id="editFileInput" accept="image/*">
-                <label class="form-label fw-semibold"><i class="fa-brands fa-google-drive text-success me-1"></i> Or Image URL / Drive Link</label>
+                <label class="form-label fw-semibold"><i class="fa-brands fa-google-drive text-success me-1"></i> Image URL / Google Drive Link</label>
                 <input type="text" class="form-control rounded-3" id="editImageInput">
               </div>
 

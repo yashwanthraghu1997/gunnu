@@ -20,7 +20,7 @@ function parseGoogleDriveUrl(urlStr) {
   const trimmed = urlStr.trim();
   if (!trimmed) return '';
 
-  if (trimmed.includes('lh3.googleusercontent.com/d/')) {
+  if (trimmed.includes('drive.google.com/thumbnail')) {
     return trimmed;
   }
 
@@ -39,7 +39,7 @@ function parseGoogleDriveUrl(urlStr) {
   }
 
   if (fileId) {
-    return `https://lh3.googleusercontent.com/d/${fileId}`;
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
   }
 
   // Prepend https:// if protocol is missing on standard URLs

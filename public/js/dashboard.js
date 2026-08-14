@@ -144,61 +144,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Modal input elements & state
   let selectedMonthForDrive = 1;
-  let pendingDataUrl = "";
 
   const driveModalInput = document.getElementById('driveModalInput');
-  const modalFileInput = document.getElementById('modalFileInput');
   const modalPasswordInput = document.getElementById('modalPasswordInput');
   const modalFeedbackAlert = document.getElementById('modalFeedbackAlert');
   const modalMonthNumDisplay = document.getElementById('modalMonthNumDisplay');
   const modalMonthNumSubtitle = document.getElementById('modalMonthNumSubtitle');
   const saveDriveModalBtn = document.getElementById('saveDriveModalBtn');
-  const modalImagePreviewContainer = document.getElementById('modalImagePreviewContainer');
-  const modalImagePreview = document.getElementById('modalImagePreview');
-
-  // File upload input change listener (FileReader)
-  if (modalFileInput) {
-    modalFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          pendingDataUrl = event.target.result;
-          if (modalImagePreview) modalImagePreview.src = pendingDataUrl;
-          if (modalImagePreviewContainer) modalImagePreviewContainer.classList.remove('d-none');
-          if (modalFeedbackAlert) modalFeedbackAlert.classList.add('d-none');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  // Drive link input listener for live preview
-  if (driveModalInput) {
-    driveModalInput.addEventListener('input', () => {
-      const val = driveModalInput.value.trim();
-      if (val) {
-        const parsed = window.convertGoogleDriveUrl(val);
-        if (modalImagePreview) modalImagePreview.src = parsed;
-        if (modalImagePreviewContainer) modalImagePreviewContainer.classList.remove('d-none');
-      }
-    });
-  }
 
   // Trigger modal when clicking any open-drive-modal-btn button
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.open-drive-modal-btn');
     if (btn) {
       selectedMonthForDrive = btn.getAttribute('data-chapter') || 1;
-      pendingDataUrl = "";
 
       if (modalMonthNumDisplay) modalMonthNumDisplay.textContent = selectedMonthForDrive;
       if (modalMonthNumSubtitle) modalMonthNumSubtitle.textContent = selectedMonthForDrive;
       if (driveModalInput) driveModalInput.value = "";
-      if (modalFileInput) modalFileInput.value = "";
       if (modalPasswordInput) modalPasswordInput.value = "";
       if (modalFeedbackAlert) modalFeedbackAlert.classList.add('d-none');
-      if (modalImagePreviewContainer) modalImagePreviewContainer.classList.add('d-none');
 
       const driveModalElement = document.getElementById('googleDriveModal');
       if (driveModalElement && window.bootstrap) {
@@ -222,20 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      let finalPhotoUrl = "";
-      if (pendingDataUrl) {
-        finalPhotoUrl = pendingDataUrl;
-      } else if (rawUrl) {
-        finalPhotoUrl = window.convertGoogleDriveUrl(rawUrl);
-      }
-
-      if (!finalPhotoUrl) {
+      if (!rawUrl) {
         if (modalFeedbackAlert) {
-          modalFeedbackAlert.textContent = "Please choose a photo file or enter a valid image URL!";
+          modalFeedbackAlert.textContent = "Please paste a valid Google Drive or Image URL!";
           modalFeedbackAlert.classList.remove('d-none');
         }
         return;
       }
+
+      const finalPhotoUrl = window.convertGoogleDriveUrl(rawUrl);
 
       saveDriveModalBtn.disabled = true;
       saveDriveModalBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Saving...`;
@@ -244,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch('/api/photo/month', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ monthId: selectedMonthForDrive, photoUrl: finalPhotoUrl, password })
+        body: JSON.stringify({ monthId: selectedMonthForDrive, driveUrl: finalPhotoUrl, password })
       })
       .then(res => res.json())
       .then(data => {

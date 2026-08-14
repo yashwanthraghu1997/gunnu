@@ -352,21 +352,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // ADD FORMS HANDLERS
   // ==========================================
-  let addPhotoPendingDataUrl = "";
-  const photoFileInput = document.getElementById('photoFileInput');
-  if (photoFileInput) {
-    photoFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          addPhotoPendingDataUrl = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
   const addPhotoForm = document.getElementById('addPhotoForm');
   if (addPhotoForm) {
     addPhotoForm.addEventListener('submit', (e) => {
@@ -376,15 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const caption = document.getElementById('photoCaptionInput').value.trim();
       const date = document.getElementById('photoDateInput').value.trim();
 
-      let finalImg = "";
-      if (addPhotoPendingDataUrl) {
-        finalImg = addPhotoPendingDataUrl;
-      } else if (rawUrl) {
-        finalImg = convertGoogleDriveUrl(rawUrl);
-      }
+      const processedUrl = convertGoogleDriveUrl(rawUrl);
 
-      if (!finalImg) {
-        alert("Please select a photo file to upload or paste a valid image URL!");
+      if (!processedUrl) {
+        alert("Please paste a valid Google Drive URL or Image Link!");
         return;
       }
 
@@ -392,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         id: `page_${Date.now()}`,
         type: 'photo',
         title: title || 'Baby Memory',
-        image: finalImg,
+        image: processedUrl,
         caption: caption,
         date: date || new Date().toLocaleDateString('en-GB')
       };
@@ -408,7 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
         bootstrap.Modal.getInstance(modalEl).hide();
       }
       addPhotoForm.reset();
-      addPhotoPendingDataUrl = "";
     });
   }
 
@@ -606,27 +585,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // EDIT PAGE MODAL
   // ==========================================
-  let editPhotoPendingDataUrl = "";
-  const editFileInput = document.getElementById('editFileInput');
-  if (editFileInput) {
-    editFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          editPhotoPendingDataUrl = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
   window.openEditModal = function (index) {
     const page = pages[index];
     if (!page) return;
-
-    editPhotoPendingDataUrl = "";
-    if (editFileInput) editFileInput.value = "";
 
     document.getElementById('editPageIndex').value = index;
     document.getElementById('editTitleInput').value = page.title || '';
@@ -682,11 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (page.type === 'photo') {
         let rawUrl = document.getElementById('editImageInput').value.trim();
-        if (editPhotoPendingDataUrl) {
-          page.image = editPhotoPendingDataUrl;
-        } else if (rawUrl) {
-          page.image = convertGoogleDriveUrl(rawUrl);
-        }
+        page.image = convertGoogleDriveUrl(rawUrl);
         page.caption = document.getElementById('editCaptionInput').value.trim();
       } else if (page.type === 'text') {
         page.content = document.getElementById('editCaptionInput').value.trim();

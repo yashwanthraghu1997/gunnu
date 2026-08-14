@@ -153,51 +153,27 @@
       </div>
     <% } %>
 
-    <!-- ELEGANT CHAPTER & MONTH PHOTO UPLOAD MODAL WITH PASSWORD PROTECTION -->
+    <!-- ELEGANT GOOGLE DRIVE PHOTO LINK MODAL WITH PASSWORD PROTECTION -->
     <div class="modal fade" id="googleDriveModal" tabindex="-1" aria-labelledby="googleDriveModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow-luxury">
           <div class="modal-header border-0 bg-light-pink rounded-top-4 px-4 py-3">
             <h5 class="modal-title font-serif fw-bold text-dark" id="googleDriveModalLabel">
-              <i class="fa-solid fa-camera-retro text-danger me-2"></i> Update Photo for Month <span id="modalMonthNumDisplay"><%= chapter.id %></span>
+              <i class="fa-brands fa-google-drive text-success me-2"></i> Set Photo for Month <span id="modalMonthNumDisplay"><%= chapter.id %></span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
-            <!-- Upload Method Nav Tabs -->
-            <ul class="nav nav-pills custom-album-pills mb-3 gap-2" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-pill px-3 py-1 text-dark fw-semibold" id="tabDeviceUploadBtn" data-bs-toggle="pill" data-bs-target="#tabDeviceUpload" type="button" role="tab">
-                  <i class="fa-solid fa-upload me-1 text-primary"></i> Upload File
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-1 text-dark fw-semibold" id="tabDriveLinkBtn" data-bs-toggle="pill" data-bs-target="#tabDriveLink" type="button" role="tab">
-                  <i class="fa-brands fa-google-drive me-1 text-success"></i> Google Drive / URL
-                </button>
-              </li>
-            </ul>
-
-            <div class="tab-content mb-3">
-              <!-- 1. Device File Upload Tab -->
-              <div class="tab-pane fade show active" id="tabDeviceUpload" role="tabpanel">
-                <label for="modalFileInput" class="form-label font-serif fw-semibold text-dark">Choose Photo from Computer / Phone</label>
-                <input type="file" id="modalFileInput" class="form-control form-control-lg rounded-pill px-3" accept="image/*">
-                <div class="form-text text-muted">Select any photo (JPEG, PNG, WebP) from your device.</div>
+            <p class="text-muted small mb-3">
+              Paste the Google Drive link or Image URL for Month <strong id="modalMonthNumSubtitle"><%= chapter.id %></strong>'s photo memory below:
+            </p>
+            
+            <div class="mb-3">
+              <label for="driveModalInput" class="form-label font-serif fw-semibold text-dark">Google Drive Share Link or Image URL</label>
+              <input type="text" id="driveModalInput" class="form-control form-control-lg rounded-pill px-4" placeholder="https://drive.google.com/file/d/1ABC.../view">
+              <div class="form-text text-muted mt-1">
+                <i class="fa-solid fa-circle-info text-primary me-1"></i> Ensure Google Drive link access is set to <strong>"Anyone with the link can view"</strong>.
               </div>
-
-              <!-- 2. Google Drive / Link Tab -->
-              <div class="tab-pane fade" id="tabDriveLink" role="tabpanel">
-                <label for="driveModalInput" class="form-label font-serif fw-semibold text-dark">Google Drive Image Link or URL</label>
-                <input type="text" id="driveModalInput" class="form-control form-control-lg rounded-pill px-4" placeholder="https://drive.google.com/file/d/1ABC.../view">
-                <div class="form-text text-muted">Paste your Google Drive link or image URL. Ensure file access is set to "Anyone with the link can view".</div>
-              </div>
-            </div>
-
-            <!-- Live Image Preview Container -->
-            <div id="modalImagePreviewContainer" class="d-none text-center my-3 p-2 bg-light-cream rounded-3 border">
-              <span class="small fw-semibold text-muted d-block mb-1">Image Preview:</span>
-              <img id="modalImagePreview" src="" alt="Selected Preview" class="img-fluid rounded-3 shadow-xs" style="max-height: 160px; object-fit: contain;">
             </div>
 
             <!-- Mandatory Password Input -->
