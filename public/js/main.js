@@ -111,6 +111,28 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://${trimmed}`;
     }
 
-    return trimmed;
+  // 4. Smart Multi-Level Image Error Fallback Handler for Google Drive Images
+  window.handleImageError = function(imgEl) {
+    if (!imgEl) return;
+    const currentSrc = imgEl.src || '';
+    
+    // Extract fileId if Google Drive URL format
+    const matchD = currentSrc.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const matchId = currentSrc.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileId = (matchD && matchD[1]) || (matchId && matchId[1]);
+
+    if (fileId) {
+      if (currentSrc.includes('lh3.googleusercontent.com')) {
+        imgEl.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+        return;
+      } else if (currentSrc.includes('drive.google.com/thumbnail')) {
+        imgEl.src = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        return;
+      }
+    }
+
+    // Final fallback to default image if all endpoints fail
+    imgEl.onerror = null;
+    imgEl.src = '/images/gunnu.jpeg';
   };
 });

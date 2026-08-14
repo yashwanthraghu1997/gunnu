@@ -71,6 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (chapterDriveBtn) {
     const monthId = chapterDriveBtn.getAttribute('data-chapter');
+
+    // Restore saved month photo from localStorage if present
+    try {
+      const savedUrl = localStorage.getItem(`gunnusVoiceMonthPhoto_${monthId}`);
+      const heroImg = document.getElementById('chapterHeroImg');
+      if (savedUrl && heroImg) {
+        heroImg.src = savedUrl;
+      }
+    } catch(e) {}
+
     chapterDriveBtn.addEventListener('click', () => {
       const inputUrl = prompt(`Paste Google Drive Image link for Month ${monthId}:`);
       if (inputUrl && inputUrl.trim()) {

@@ -194,7 +194,7 @@
                 <div class="polaroid-tape"></div>
                 <div class="polaroid-img-wrapper">
                   <img src="<%= currentMonth.image %>" id="scrapbookPhotoPreview" alt="Polaroid Memory"
-                    class="polaroid-img shadow-xs lightbox-trigger" data-title="Month <%= currentMonth.id %> Memory">
+                    class="polaroid-img shadow-xs lightbox-trigger" data-title="Month <%= currentMonth.id %> Memory" onerror="if(window.handleImageError) window.handleImageError(this);">
                 </div>
                 <div class="pt-2 text-center">
                   <span class="font-serif fw-bold text-dark small d-block" id="scrapbookPhotoCaption">Month <%=
@@ -382,7 +382,7 @@
                     <div class="polaroid-frame mb-3 mx-auto text-center">
                       <div class="polaroid-tape"></div>
                       <div class="polaroid-img-wrapper">
-                        <img src="<%= ch.image %>" alt="Month <%= ch.id %> Memory" class="polaroid-img shadow-xs lightbox-trigger" id="chapterCardImg-<%= ch.id %>" data-title="Month <%= ch.id %> Photo">
+                        <img src="<%= ch.image %>" alt="Month <%= ch.id %> Memory" class="polaroid-img shadow-xs lightbox-trigger" id="chapterCardImg-<%= ch.id %>" data-title="Month <%= ch.id %> Photo" onerror="if(window.handleImageError) window.handleImageError(this);">
                       </div>
                       <div class="pt-2">
                         <button class="btn btn-sm btn-outline-pink rounded-pill w-100 open-drive-modal-btn" data-chapter="<%= ch.id %>">

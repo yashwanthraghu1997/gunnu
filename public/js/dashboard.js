@@ -20,6 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLiveClock();
   setInterval(updateLiveClock, 1000);
 
+  // Restore saved month photos from localStorage on load
+  try {
+    for (let m = 1; m <= 12; m++) {
+      const savedUrl = localStorage.getItem(`gunnusVoiceMonthPhoto_${m}`);
+      if (savedUrl) {
+        const cardImg = document.getElementById(`chapterCardImg-${m}`);
+        if (cardImg) cardImg.src = savedUrl;
+      }
+    }
+  } catch(e) {}
+
   // 2. Interactive Zoomable Photo Lightbox Modal Handler
   const lightboxModalImg = document.getElementById('lightboxModalImg');
   const lightboxModalCaption = document.getElementById('lightboxModalCaption');

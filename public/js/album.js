@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="photo-tape-frame my-auto">
             <div class="tape-corner tape-top-left"></div>
             <div class="tape-corner tape-top-right"></div>
-            <img src="${page.image}" alt="${page.title || 'Photo'}" class="photo-album-img shadow-sm" onerror="this.src='/images/gunnu.jpeg'">
+            <img src="${page.image}" alt="${page.title || 'Photo'}" class="photo-album-img shadow-sm" onerror="if(window.handleImageError) window.handleImageError(this); else this.src='/images/gunnu.jpeg'">
           </div>
 
           <div>
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let innerHTML = '';
       if (p.type === 'photo') {
-        innerHTML = `<img src="${p.image}" class="thumb-img" alt="Page ${idx + 1}" onerror="this.src='/images/gunnu.jpeg'">`;
+        innerHTML = `<img src="${p.image}" class="thumb-img" alt="Page ${idx + 1}" onerror="if(window.handleImageError) window.handleImageError(this); else this.src='/images/gunnu.jpeg'">`;
       } else if (p.type === 'text') {
         innerHTML = `<div class="thumb-placeholder"><i class="fa-solid fa-file-pen text-primary"></i></div>`;
       } else if (p.type === 'name_reveal') {
@@ -358,6 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       pages.push(newPage);
+      currentPairIndex = Math.floor((pages.length - 1) / 2) * 2;
+      sessionStorage.setItem('gunnusVoiceLastAlbumPage', currentPairIndex);
       setUnsavedState(true);
       window.updateDesktopView();
 
@@ -631,6 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (data.success) {
             setUnsavedState(false);
+            sessionStorage.setItem('gunnusVoiceLastAlbumPage', currentPairIndex);
             const modalEl = document.getElementById('savePasswordModal');
             if (modalEl && window.bootstrap) {
               bootstrap.Modal.getInstance(modalEl).hide();
@@ -656,6 +659,15 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
     });
+  }
+
+  // Restore last active page index on refresh
+  const savedPairIdx = sessionStorage.getItem('gunnusVoiceLastAlbumPage');
+  if (savedPairIdx !== null && !isNaN(parseInt(savedPairIdx, 10))) {
+    const idx = parseInt(savedPairIdx, 10);
+    if (idx >= 0 && idx < pages.length) {
+      currentPairIndex = Math.floor(idx / 2) * 2;
+    }
   }
 
   // Initial Desktop Render
