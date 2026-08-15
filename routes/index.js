@@ -298,10 +298,10 @@ router.post('/api/photo/month', async (req, res) => {
     return res.status(401).json({ success: false, message: "Please enter your password to update the photo!" });
   }
 
-  const validPasswords = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
-  const trimmed = password.trim().toLowerCase();
+  const validPasswords = ['gunnu@987'];
+  const trimmed = password.trim();
 
-  if (!validPasswords.includes(trimmed)) {
+  if (!validPasswords.includes(trimmed) && trimmed.toLowerCase() !== 'gunnu@987') {
     return res.status(401).json({ success: false, message: "Incorrect password. Please try again." });
   }
 
@@ -456,10 +456,10 @@ router.post('/api/album', async (req, res) => {
     return res.status(400).json({ success: false, message: "Please enter the album password to save your memories!" });
   }
 
-  const validPasswords = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
-  const trimmed = password.trim().toLowerCase();
+  const validPasswords = ['gunnu@987'];
+  const trimmed = password.trim();
 
-  if (!validPasswords.includes(trimmed)) {
+  if (!validPasswords.includes(trimmed) && trimmed.toLowerCase() !== 'gunnu@987') {
     return res.status(401).json({ success: false, message: "Incorrect album password. Please try again." });
   }
 

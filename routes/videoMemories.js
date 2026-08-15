@@ -62,11 +62,12 @@ function parseGoogleDriveUrl(urlStr) {
 }
 
 // Valid password list matching site protection
-const VALID_PASSWORDS = ['gunnu', 'mohit', 'akanksha', '1234', 'password', 'love', 'baby', 'arika'];
+const VALID_PASSWORDS = ['gunnu@987'];
 
 function verifyPassword(password) {
   if (!password || typeof password !== 'string') return false;
-  return VALID_PASSWORDS.includes(password.trim().toLowerCase());
+  const trimmed = password.trim();
+  return trimmed === 'gunnu@987' || trimmed.toLowerCase() === 'gunnu@987';
 }
 
 // 1. GET /video-memories - Render Video Memories Page
