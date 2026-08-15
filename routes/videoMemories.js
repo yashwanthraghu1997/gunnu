@@ -61,6 +61,31 @@ function parseGoogleDriveUrl(urlStr) {
   return trimmed;
 }
 
+// Helper: Parse Google Drive Photo/Thumbnail Link with Video Fallback
+function parseGoogleDriveImage(urlStr, fallbackVideoUrl) {
+  if (urlStr && typeof urlStr === 'string') {
+    const trimmed = urlStr.trim();
+    if (trimmed && !trimmed.includes('/folders/')) {
+      const match = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+      }
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/') || trimmed.startsWith('data:')) {
+        return trimmed;
+      }
+    }
+  }
+
+  if (fallbackVideoUrl && typeof fallbackVideoUrl === 'string') {
+    const videoMatch = fallbackVideoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || fallbackVideoUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (videoMatch && videoMatch[1]) {
+      return `https://drive.google.com/thumbnail?id=${videoMatch[1]}&sz=w1000`;
+    }
+  }
+
+  return '/images/gunnu.jpeg';
+}
+
 // Valid password list matching site protection
 const VALID_PASSWORDS = ['gunnu@987'];
 
@@ -117,15 +142,7 @@ router.post(['/video-memories/upload', '/api/video-memories'], async (req, res) 
     }
 
     const processedVideoUrl = parseGoogleDriveUrl(rawVideoUrl.trim());
-    let processedThumbnail = thumbnail ? thumbnail.trim() : '';
-
-    // If thumbnail is empty but it's a Google Drive link, extract thumbnail automatically
-    if (!processedThumbnail && (rawVideoUrl.includes('drive.google.com') || rawVideoUrl.includes('/d/'))) {
-      const match = rawVideoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || rawVideoUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        processedThumbnail = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-      }
-    }
+    const processedThumbnail = parseGoogleDriveImage(thumbnail, rawVideoUrl);
 
     const memories = await getVideoMemoriesAsync();
     const newId = memories.length > 0 ? Math.max(...memories.map(m => m.id)) + 1 : 1;
@@ -134,7 +151,7 @@ router.post(['/video-memories/upload', '/api/video-memories'], async (req, res) 
       id: newId,
       videoUrl: processedVideoUrl,
       rawVideoUrl: rawVideoUrl.trim(),
-      thumbnail: processedThumbnail || '/images/gunnu.jpeg',
+      thumbnail: processedThumbnail,
       title: title.trim(),
       date: date ? date.trim() : new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
       babyAge: babyAge ? babyAge.trim() : 'Baby Memory',
@@ -176,12 +193,13 @@ router.put('/api/video-memories/:id', async (req, res) => {
 
     const rawVideoUrl = driveUrl || videoUrl || memories[index].videoUrl;
     const processedVideoUrl = parseGoogleDriveUrl(rawVideoUrl.trim());
+    const processedThumbnail = parseGoogleDriveImage(thumbnail || memories[index].thumbnail, rawVideoUrl);
 
     memories[index] = {
       ...memories[index],
       videoUrl: processedVideoUrl,
       rawVideoUrl: rawVideoUrl.trim(),
-      thumbnail: thumbnail ? thumbnail.trim() : memories[index].thumbnail,
+      thumbnail: processedThumbnail,
       title: title ? title.trim() : memories[index].title,
       date: date ? date.trim() : memories[index].date,
       babyAge: babyAge ? babyAge.trim() : memories[index].babyAge,

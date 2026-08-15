@@ -160,18 +160,26 @@ document.addEventListener('DOMContentLoaded', () => {
       card.dataset.index = idx;
 
       let thumbSrc = mem.thumbnail;
-      if (!thumbSrc || thumbSrc === '/images/gunnu.jpeg') {
-        const driveId = extractDriveFileId(mem.videoUrl || mem.rawVideoUrl);
-        if (driveId) {
-          thumbSrc = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000`;
-        } else {
-          thumbSrc = '/images/gunnu.jpeg';
-        }
+      let driveId = null;
+
+      if (thumbSrc && typeof thumbSrc === 'string' && !thumbSrc.includes('/folders/')) {
+        driveId = extractDriveFileId(thumbSrc);
       }
+      if (!driveId) {
+        driveId = extractDriveFileId(mem.videoUrl || mem.rawVideoUrl);
+      }
+
+      if (driveId) {
+        thumbSrc = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000`;
+      } else if (!thumbSrc || thumbSrc.includes('/folders/')) {
+        thumbSrc = '/images/gunnu.jpeg';
+      }
+
+      const videoDriveId = extractDriveFileId(mem.videoUrl || mem.rawVideoUrl) || '';
 
       card.innerHTML = `
         <div class="vm-thumb-img-wrapper">
-          <img src="${thumbSrc}" alt="${mem.title}" onerror="this.src='/images/gunnu.jpeg'">
+          <img src="${thumbSrc}" alt="${mem.title}" onerror="if (!this.dataset.triedDrive && '${videoDriveId}') { this.dataset.triedDrive = 'true'; this.src = 'https://drive.google.com/thumbnail?id=${videoDriveId}&sz=w1000'; } else { this.src = '/images/gunnu.jpeg'; }">
           <div class="vm-play-overlay">
             <div class="vm-play-icon">
               <i class="fa-solid fa-play"></i>
@@ -249,6 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('modalFormTitle').textContent = 'Edit Video Memory ❤️';
       if (vmInputVideoUrl) vmInputVideoUrl.value = mem.rawVideoUrl || mem.videoUrl || '';
+      const vmInputThumbnail = document.getElementById('vmInputThumbnail');
+      if (vmInputThumbnail) vmInputThumbnail.value = mem.thumbnail || '';
       document.getElementById('vmInputTitle').value = mem.title || '';
       document.getElementById('vmInputDate').value = mem.date || '';
       document.getElementById('vmInputAge').value = mem.babyAge || '';
@@ -302,11 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const videoSource = vmInputVideoUrl ? vmInputVideoUrl.value.trim() : '';
+      const thumbnailVal = document.getElementById('vmInputThumbnail') ? document.getElementById('vmInputThumbnail').value.trim() : '';
 
       if (pendingAction === 'SAVE_ADD') {
         const payload = {
           videoUrl: videoSource,
           driveUrl: videoSource,
+          thumbnail: thumbnailVal,
           title: document.getElementById('vmInputTitle').value,
           date: document.getElementById('vmInputDate').value,
           babyAge: document.getElementById('vmInputAge').value,
@@ -340,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = {
           videoUrl: videoSource,
           driveUrl: videoSource,
+          thumbnail: thumbnailVal,
           title: document.getElementById('vmInputTitle').value,
           date: document.getElementById('vmInputDate').value,
           babyAge: document.getElementById('vmInputAge').value,
