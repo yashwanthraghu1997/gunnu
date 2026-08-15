@@ -16,6 +16,8 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Load application routes
 const indexRoutes = require('./routes/index');
+const videoMemoriesRoutes = require('./routes/videoMemories');
+app.use('/', videoMemoriesRoutes);
 app.use('/', indexRoutes);
 
 // 404 Fallback Route
